@@ -33,7 +33,7 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 #time{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:8px}
 #time .rd{min-width:132px;text-align:center;font-size:14px;line-height:1.25}#time .rd b{display:block;font-weight:600}#time .rd span{color:var(--dim);font-size:13px}
 /* control panel */
-#pad{position:fixed;left:16px;bottom:16px;display:flex;align-items:stretch;gap:14px;padding:14px 16px 10px;border-radius:20px;
+#pad{position:fixed;left:50%;transform:translateX(-50%);bottom:86px;display:flex;align-items:stretch;gap:22px;padding:14px 26px 10px;border-radius:22px;
   background:linear-gradient(160deg,rgba(34,42,60,.92),rgba(10,13,21,.94));border:1px solid rgba(255,255,255,.12);
   box-shadow:0 18px 40px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.1),inset 0 -2px 0 rgba(0,0,0,.4);touch-action:none;user-select:none;-webkit-user-select:none}
 #pad .sec{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -56,7 +56,6 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 .lift{display:flex;flex-direction:column;gap:6px}.lift .key{width:56px;height:76px;border-radius:14px}
 .lift .key span{display:block;font-size:12px;margin-top:-2px}.lift .key{display:flex;flex-direction:column;align-items:center;justify-content:center}
 .dn svg{transform:rotate(180deg)}
-.boost{width:100%;height:34px!important;font-size:12.5px;border-radius:10px!important}
 .vdiv{width:1px;background:linear-gradient(transparent,rgba(255,255,255,.14),transparent)}
 #info{position:fixed;top:78px;right:12px;bottom:84px;width:min(360px,calc(100vw - 24px));padding:18px 18px 14px;overflow-y:auto;transform:translateX(calc(100% + 24px));transition:transform .35s ease;z-index:5}
 #info.open{transform:none}
@@ -81,8 +80,8 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 #helpCard.open{display:block}#helpCard h3{margin:0 0 8px;font-size:15px}#helpCard div{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px solid var(--line)}#helpCard kbd{font:inherit;color:var(--gold)}
 #hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:14px 20px;text-align:center;font-size:15px;transition:opacity .8s;pointer-events:none}
 #err{position:fixed;inset:0;display:none;place-items:center;text-align:center;padding:30px}
-@media(max-width:900px){#brand div{display:none}#search input{width:130px}#time{bottom:236px}}
-@media(max-width:600px){#search{display:none}#pad{left:50%;transform:translateX(-50%);bottom:10px}}
+@media(max-width:900px){#brand div{display:none}#search input{width:130px}}
+@media(max-width:600px){#search{display:none}#pad{transform:translateX(-50%) scale(.82);transform-origin:50% 100%;bottom:80px}}
 @media(prefers-reduced-motion:reduce){#info{transition:none}}
 </style>
 </head>
@@ -115,6 +114,14 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 
 <div id="pad" aria-label="Flight controls">
   <div class="sec">
+    <div class="lift">
+      <button class="key" data-k="rl" aria-label="Rotate left"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4.5v5h5"/></svg><span>Left</span></button>
+      <button class="key" data-k="rr" aria-label="Rotate right"><svg viewBox="0 0 24 24" aria-hidden="true" style="transform:scaleX(-1)"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4.5v5h5"/></svg><span>Right</span></button>
+    </div>
+    <div class="cap"><span class="led" id="ledR"></span>Rotate</div>
+  </div>
+  <div class="vdiv"></div>
+  <div class="sec">
     <div class="dpad">
       <button class="key f" data-k="f" aria-label="Forward"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
       <button class="key l" data-k="l" aria-label="Left"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
@@ -131,7 +138,6 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
       <button class="key dn" data-k="d" aria-label="Sink"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13l6-6 6 6M6 19l6-6 6 6"/></svg><span>Down</span></button>
     </div>
     <div class="cap"><span class="led" id="ledL"></span>Lift</div>
-    <button class="key boost" data-k="x" aria-label="Boost (hold)">Boost</button>
   </div>
 </div>
 
@@ -144,6 +150,7 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
   <div><span>Zoom</span><kbd>Scroll</kbd></div>
   <div><span>Fly</span><kbd>W A S D / arrow pad</kbd></div>
   <div><span>Rise / sink</span><kbd>E / Q</kbd></div>
+  <div><span>Rotate</span><kbd>Z / C</kbd></div>
   <div><span>Boost</span><kbd>Shift</kbd></div>
   <div><span>Select &amp; fly to</span><kbd>Click</kbd></div>
   <div><span>Back out</span><kbd>Esc</kbd></div>
@@ -789,9 +796,10 @@ function frame(now){
   updateBodies(simT);scene.updateMatrixWorld();
 
   // movement input
-  const act={f:!!(keys.w||keys.arrowup||pad.f),b:!!(keys.s||keys.arrowdown||pad.b),l:!!(keys.a||keys.arrowleft||pad.l),r:!!(keys.d||keys.arrowright||pad.r),u:!!(keys.e||pad.u),d:!!(keys.q||pad.d),x:!!(keys.shift||pad.x)};
+  const act={f:!!(keys.w||keys.arrowup||pad.f),b:!!(keys.s||keys.arrowdown||pad.b),l:!!(keys.a||keys.arrowleft||pad.l),r:!!(keys.d||keys.arrowright||pad.r),u:!!(keys.e||pad.u),d:!!(keys.q||pad.d),x:!!keys.shift,rl:!!(keys.z||pad.rl),rr:!!(keys.c||pad.rr)};
   for(const b of padBtns){const on=act[b.dataset.k];if(b._on!==on){b._on=on;b.classList.toggle('on',on)}}
-  const thr=act.f||act.b||act.l||act.r,lift=act.u||act.d;$('#ledT').classList.toggle('on',thr);$('#ledL').classList.toggle('on',lift);$('#hubLed').classList.toggle('on',thr||lift);
+  const thr=act.f||act.b||act.l||act.r,lift=act.u||act.d;$('#ledT').classList.toggle('on',thr);$('#ledL').classList.toggle('on',lift);const turn=act.rr-act.rl;$('#hubLed').classList.toggle('on',thr||lift||!!turn);$('#ledR').classList.toggle('on',!!turn);
+  if(turn){if(cam.mode==='focus')cam.yaw+=turn*1.1*dt;else cam.fyaw-=turn*1.1*dt}
   const f=act.f-act.b,st=act.r-act.l,vv=act.u-act.d;
   if(Math.abs(f)+Math.abs(st)+Math.abs(vv)>.05){
     toFree();const sp=flySpeed()*(act.x?5:1)*dt;const q=camera.quaternion;
