@@ -37,6 +37,7 @@ Three.js r128 loads from cdnjs, so an internet connection is needed.
 | Rotate left / right | Z / C or Rotate buttons |
 | Boost | Shift |
 | Select and fly to | Click |
+| Return home (with confirmation) | Return home button or H |
 | Back out | Esc |
 | Previous / next object | Back and Forward buttons, Backspace, Alt+← / → |
 | Pause / speed | Space, `,` and `.` |
