@@ -356,7 +356,7 @@ const MOON_INFO = {
  Oberon:{style:'uranian',mass:'3.08 × 10²¹ kg',disc:'1787, William Herschel',desc:'The outermost large moon of Uranus, old and heavily cratered.',facts:['Some crater floors are coated in mysterious dark material.']},
  Puck:{disc:'1985, Voyager 2',desc:'The largest of Uranus’s small inner moons, found in Voyager 2 images.',facts:[]},
  Triton:{style:'triton',mass:'2.14 × 10²² kg',disc:'1846, William Lassell',desc:'Neptune’s giant moon orbits backwards, a sign it is a captured Kuiper belt object.',facts:['Voyager 2 saw nitrogen geysers erupting from its surface.','Tides are dragging it inward; in billions of years it may be torn apart into a ring.','Its surface, about −235 °C, is among the coldest measured.']},
- Nereid:{disc:'1949, Gerard Kuiper',desc:'A moon on one of the most stretched orbits of any moon, swinging between about 1.4 and 9.6 million km from Neptune.',facts:['Its path is shown here as a circle at its average distance.']},
+ Nereid:{disc:'1949, Gerard Kuiper',desc:'A moon on one of the most stretched orbits of any moon, swinging between about 1.4 and 9.6 million km from Neptune.',facts:['Its path is drawn here as circular, at its average distance.']},
  Proteus:{disc:'1989, Voyager 2',desc:'Neptune’s second-largest moon, about as big as a body can get without gravity pulling it round.',facts:['It is so dark it was missed by telescopes until Voyager 2 flew past.']},
  Charon:{style:'charon',mass:'1.59 × 10²¹ kg',disc:'1978, James Christy',desc:'Pluto’s largest moon, half Pluto’s width. The two are locked face to face, each always showing the other the same side.',facts:['Its reddish north pole, Mordor Macula, is stained by gas escaping from Pluto.']},
  Nix:{disc:'2005, Hubble team',desc:'A small moon of Pluto that tumbles chaotically.',facts:[]},
@@ -492,9 +492,12 @@ function addPrimary(p){
 PLANETS.forEach(addPrimary);DWARFS.forEach(addPrimary);ASTEROIDS.forEach(addPrimary);
 
 // moons
-const moonOrbitMat=new THREE.LineBasicMaterial({color:0x7d97ff,transparent:true,opacity:.28,depthWrite:false});
+const moonOrbitMat=new THREE.LineBasicMaterial({vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false});
 const smallMat=phong('#6d6459','small',128,64);
-const circleGeo=(()=>{const pts=[];for(let k=0;k<=128;k++){const a=k/128*TAU;pts.push(new THREE.Vector3(Math.cos(a),0,-Math.sin(a)))}return new THREE.BufferGeometry().setFromPoints(pts)})();
+// fading trail: a 100-degree arc ending at the moon, bright at the head and fading to nothing at the tail
+const TRAIL=100*DEG;
+const circleGeo=(()=>{const pts=[],col=[],N=64;for(let k=0;k<=N;k++){const f=k/N,a=-TRAIL*(1-f);pts.push(new THREE.Vector3(Math.cos(a),0,-Math.sin(a)));const c=Math.pow(f,1.6)*.85;col.push(.62*c,.72*c,1*c)}
+  const g=new THREE.BufferGeometry().setFromPoints(pts);g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));return g})();
 let moonCount=0;
 function addMoon(pb,R,name,aKm,rKm,inc,g,opt={},unnamed=false){
   const gm=pb.gm||GM[pb.id];const x=aKm/pb.rKm,d=moonDist(aKm,pb.rKm,pb.r);
@@ -703,7 +706,7 @@ function renderInfo(){
   let extra='';
   if(b.kind==='moon'&&b.info.desc&&GROUPS[b.g]&&!['em','jg','sm','um','nt'].includes(b.g))extra+=`<p class="note">${GROUPS[b.g]}</p>`;
   if(b.unnamed)extra+=`<p class="note">This is one of ${b.parent.unnamedCount} small ${b.parent.name} moons known only by provisional designations (such as S/2023 S 1). Its orbit here is representative of its family, not its exact path.</p>`;
-  else if(b.kind==='moon'&&b.aKm>3e6)extra+=`<p class="note">Orbit shown as a circle at its average distance and tilt.</p>`;
+  else if(b.kind==='moon'&&b.aKm>3e6)extra+=`<p class="note">Orbit drawn as circular, at its average distance and tilt.</p>`;
   if(b.approx)extra+=`<p class="note">Position along its orbit is approximate.</p>`;
   let moonsHtml='';
   if(b.moons&&b.moons.length){const named=b.moons.filter(m=>!m.unnamed).sort((x,y)=>y.rKm-x.rKm);const show=named.slice(0,b===byName.get('saturn')||b===byName.get('jupiter')?18:30);
@@ -733,7 +736,7 @@ addEventListener('resize',resize);resize();
 function updateBodies(t){
   sunMesh.rotation.y=(t*24/SUN.rot)*TAU%TAU;
   for(const b of bodies){
-    if(b.kind==='moon'){const th=b.phase+TAU*t/b.P;b.mesh.position.set(b.d*Math.cos(th),0,-b.d*Math.sin(th));b.mesh.rotation.y=th%TAU}
+    if(b.kind==='moon'){const th=(b.phase+TAU*t/b.P)%TAU;b.mesh.position.set(b.d*Math.cos(th),0,-b.d*Math.sin(th));b.mesh.rotation.y=th;if(b.orbitLine.visible)b.orbitLine.rotation.y=th}
     else if(b.anchor){keplerPos(b,t,b.anchor.position);b.mesh.rotation.y=(t*24/b.rot)%1*TAU;if(b.clouds)b.clouds.rotation.y=(t*24/b.rot*1.08)%1*TAU}
   }
   beltMats.forEach(m=>m.uniforms.uT.value=t);
