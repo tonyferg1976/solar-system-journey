@@ -30,7 +30,15 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 #search{padding:6px}#search input{font:inherit;font-size:16px;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:10px;padding:7px 11px;width:200px}
 #tog{position:fixed;top:78px;left:12px;display:flex;flex-direction:column;gap:6px;padding:8px}
 #tog button{font-size:14px;text-align:left}
-#time{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:8px}
+#dock{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;align-items:stretch;gap:6px}
+#time{display:flex;align-items:center;gap:8px;padding:8px}
+.half{width:42px;min-height:0;padding:0;display:grid;place-items:center;color:#c9d3e6;border:1px solid rgba(255,255,255,.13);
+  background:linear-gradient(180deg,#2c364b,#151b27);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 6px 14px rgba(0,0,0,.45);transition:color .15s,box-shadow .2s,opacity .2s}
+.half.back{border-radius:999px 6px 6px 999px;padding-left:6px}.half.fwd{border-radius:6px 999px 999px 6px;padding-right:6px}
+.half svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.half:not(:disabled):hover{color:#fff3dc;box-shadow:inset 0 1px 0 rgba(255,230,180,.3),0 0 16px rgba(255,170,60,.5);border-color:rgba(255,200,120,.55)}
+.half:not(:disabled):active{background:linear-gradient(180deg,#a8650f,#5c3606)}
+.half:disabled{opacity:.32;cursor:default}
 #time .rd{min-width:132px;text-align:center;font-size:14px;line-height:1.25}#time .rd b{display:block;font-weight:600}#time .rd span{color:var(--dim);font-size:13px}
 /* control panel */
 #pad{position:fixed;left:50%;transform:translateX(-50%);bottom:86px;display:flex;align-items:stretch;gap:22px;padding:14px 26px 10px;border-radius:22px;
@@ -104,12 +112,16 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
   <button id="tReset">Overview</button>
 </div>
 
+<div id="dock">
+<button id="hBack" class="half back" aria-label="Back" title="Back" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
 <div id="time" class="glass">
   <button id="slower" aria-label="Slower">⏪</button>
   <button id="play" aria-label="Pause">⏸</button>
   <button id="faster" aria-label="Faster">⏩</button>
   <div class="rd"><b id="date">—</b><span id="spd">—</span></div>
   <button id="now">Today</button>
+</div>
+<button id="hFwd" class="half fwd" aria-label="Forward" title="Forward" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
 </div>
 
 <div id="pad" aria-label="Flight controls">
@@ -154,6 +166,7 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
   <div><span>Boost</span><kbd>Shift</kbd></div>
   <div><span>Select &amp; fly to</span><kbd>Click</kbd></div>
   <div><span>Back out</span><kbd>Esc</kbd></div>
+  <div><span>Previous / next object</span><kbd>Backspace, Alt+← / →</kbd></div>
   <div><span>Pause / speed</span><kbd>Space  ,  .</kbd></div>
   <p class="note" style="margin:8px 0 0">Sizes are enlarged and distances compressed so everything is visible. Switch on “True distances” to see real spacing.</p>
 </div>
@@ -655,7 +668,7 @@ function flyTo(b,dist){
   cam.anim={t:0,dur:1.8,from:camera.position.clone(),fromLook:cam.look.clone()};
   Object.assign(cam,{mode:'focus',target:b,dist:dist||focusDistFor(b),yaw,pitch});
 }
-function overview(){select(null);cam.anim={t:0,dur:1.8,from:camera.position.clone(),fromLook:cam.look.clone()};Object.assign(cam,{mode:'focus',target:sun,dist:overviewDist(),yaw:.5,pitch:.55})}
+function overview(){pushHist('overview');select(null);cam.anim={t:0,dur:1.8,from:camera.position.clone(),fromLook:cam.look.clone()};Object.assign(cam,{mode:'focus',target:sun,dist:overviewDist(),yaw:.5,pitch:.55})}
 function toFree(){if(cam.mode==='free')return;cam.anim=null;const d=new THREE.Vector3();camera.getWorldDirection(d);cam.fyaw=Math.atan2(-d.x,-d.z);cam.fpitch=Math.asin(clamp(d.y,-1,1));cam.mode='free'}
 
 /* pointer */
@@ -678,6 +691,7 @@ const mouse={x:0,y:0,dirty:false};
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();keys[k]=true;
   if(k===' '){e.preventDefault();togglePause()}
   if(k===','||k==='<')setSpeed(speedI-1);if(k==='.'||k==='>')setSpeed(speedI+1);
+  if(k==='backspace'||(e.altKey&&k==='arrowleft')){e.preventDefault();goHist(-1);return}if(e.altKey&&k==='arrowright'){e.preventDefault();goHist(1);return}
   if(k==='escape'){if(sel&&sel.kind==='moon')select(sel.parent,true);else overview()}});
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
@@ -724,10 +738,18 @@ function kindLabel(b){
   if(b.kind==='asteroid')return'Asteroid · Main belt';
   return'Moon of '+b.parent.name+(b.g==='jg'?' · Galilean moon':'');
 }
+/* view history: back / forward like a browser */
+const hist={list:[],i:-1,nav:false};
+const histName=e=>e==='overview'?'solar system view':e.name;
+function updHist(){const bk=$('#hBack'),fw=$('#hFwd'),p=hist.list[hist.i-1],n=hist.list[hist.i+1];
+  bk.disabled=!p;fw.disabled=!n;bk.title=p?'Back to '+histName(p):'Back';fw.title=n?'Forward to '+histName(n):'Forward';bk.setAttribute('aria-label',bk.title);fw.setAttribute('aria-label',fw.title)}
+function pushHist(e){if(hist.nav||hist.list[hist.i]===e)return;hist.list=hist.list.slice(0,hist.i+1);hist.list.push(e);if(hist.list.length>100)hist.list.shift();hist.i=hist.list.length-1;updHist()}
+function goHist(d){const j=hist.i+d;if(j<0||j>=hist.list.length)return;hist.i=j;hist.nav=true;const e=hist.list[j];if(e==='overview')overview();else select(e,true);hist.nav=false;updHist()}
+$('#hBack').onclick=()=>goHist(-1);$('#hFwd').onclick=()=>goHist(1);
 function select(b,fly){
   sel=b;beltSel=null;$('#q').value='';
   if(!b){info.classList.remove('open');setMoonOrbits(null);return}
-  if(fly){flyTo(b);if(b.moons&&b.moons.length&&speedI>4&&b!==sun)setSpeed(4)}
+  if(fly){pushHist(b);flyTo(b);if(b.moons&&b.moons.length&&speedI>4&&b!==sun)setSpeed(4)}
   setMoonOrbits(b.kind==='moon'?b.parent:b);renderInfo();info.classList.add('open');
 }
 function setMoonOrbits(sys){for(const b of bodies)if(b.orbitLine&&b.kind==='moon')b.orbitLine.visible=!!sys&&b.parent===sys&&showOrbits}

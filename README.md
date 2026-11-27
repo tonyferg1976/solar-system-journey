@@ -10,6 +10,7 @@ An interactive 3D solar system explorer that runs in the browser, built with [Th
 - The asteroid belt, Jupiter's trojan asteroids and the Kuiper belt
 - Click any object to fly to it; planets show their moons orbiting with fading trails, and an info panel gives stats, a description and facts
 - Free flight with WASD or the on-screen control panel (thrust pad, rotate and lift buttons), orbit and zoom with the mouse
+- Back and Forward buttons to retrace the objects you've visited
 - Time controls from real time up to 10 years per second, search, labels and orbit toggles, and a "true distances" mode
 
 ## Run it
@@ -34,6 +35,7 @@ Three.js r128 loads from cdnjs, so an internet connection is needed.
 | Boost | Shift |
 | Select and fly to | Click |
 | Back out | Esc |
+| Previous / next object | Back and Forward buttons, Backspace, Alt+← / → |
 | Pause / speed | Space, `,` and `.` |
 
 Sizes are enlarged and distances compressed by default so everything is visible.
