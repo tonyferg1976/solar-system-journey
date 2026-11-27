@@ -11,6 +11,8 @@ An interactive 3D solar system explorer that runs in the browser, built with [Th
 - Click any object to fly to it; planets show their moons orbiting with fading trails, and an info panel gives stats, a description and facts
 - Free flight with WASD or the on-screen control panel (thrust pad, rotate and lift buttons), orbit and zoom with the mouse
 - Back and Forward buttons to retrace the objects you've visited
+- Journeys: seven guided tours (Grand Tour, Ocean Worlds, Fire and Ice, Lords of the Rings, Record Breakers, Kuiper Frontier, Moons of Jupiter) that fly you between stops with narration
+- Quiz: 10 questions per round from a hand-written and data-generated bank; the camera flies to each answer, and your best and last scores are saved in your browser
 - Works on phones and tablets: drag to look, pinch to zoom, tap to select
 - Time controls from real time up to 10 years per second, search, labels and orbit toggles, and a "true distances" mode
 
