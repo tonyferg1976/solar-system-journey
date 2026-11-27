@@ -11,6 +11,7 @@ An interactive 3D solar system explorer that runs in the browser, built with [Th
 - Click any object to fly to it; planets show their moons orbiting with fading trails, and an info panel gives stats, a description and facts
 - Free flight with WASD or the on-screen control panel (thrust pad, rotate and lift buttons), orbit and zoom with the mouse
 - Back and Forward buttons to retrace the objects you've visited
+- Works on phones and tablets: drag to look, pinch to zoom, tap to select
 - Time controls from real time up to 10 years per second, search, labels and orbit toggles, and a "true distances" mode
 
 ## Run it
@@ -28,7 +29,7 @@ Three.js r128 loads from cdnjs, so an internet connection is needed.
 | Action | Input |
 | --- | --- |
 | Look / orbit | Drag |
-| Zoom | Scroll |
+| Zoom | Scroll, or pinch on touch screens |
 | Fly | W A S D or thrust pad |
 | Rise / sink | E / Q or Up / Down |
 | Rotate left / right | Z / C or Rotate buttons |

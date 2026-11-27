@@ -14,11 +14,11 @@
    LAYOUT: full-bleed canvas, glass panels pinned to the edges, info drawer on the right */
 :root{color-scheme:dark;--ink:#e9edf5;--dim:#9aa6bd;--gold:#ffb547;--glass:rgba(10,14,24,.72);--line:rgba(255,255,255,.1)}
 *{box-sizing:border-box;min-width:0}
-html,body{margin:0;height:100%;overflow:hidden;background:#000;color:var(--ink);font:15px/1.5 "Exo 2",system-ui,sans-serif}
+html,body{margin:0;height:100%;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;background:#000;color:var(--ink);font:15px/1.5 "Exo 2",system-ui,sans-serif}
 #c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 #c.drag{cursor:grabbing}#c.hot{cursor:pointer}
 .glass{background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:14px}
-button{font:inherit;color:inherit;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;min-height:38px}
+button{touch-action:manipulation;font:inherit;color:inherit;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;min-height:38px}
 button:hover{background:rgba(255,255,255,.12)}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);color:#ffe2b0}
 #top{position:fixed;top:12px;left:12px;right:12px;display:flex;gap:10px;align-items:center;pointer-events:none}
@@ -69,6 +69,7 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 #info.open{transform:none}
 #info h2{margin:0;font-size:30px;line-height:1.05;font-weight:700}
 #info .sub{color:var(--gold);font-size:14px;margin:4px 0 12px}
+#info .more{display:none}
 #info .x{position:absolute;top:10px;right:10px;width:36px;height:36px;padding:0;min-height:0}
 #info table{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 12px}
 #info td{padding:5px 0;border-bottom:1px solid var(--line);vertical-align:top}#info td:first-child{color:var(--dim);padding-right:10px;white-space:nowrap}#info td:last-child{text-align:right}
@@ -89,7 +90,31 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 #hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:14px 20px;text-align:center;font-size:15px;transition:opacity .8s;pointer-events:none}
 #err{position:fixed;inset:0;display:none;place-items:center;text-align:center;padding:30px}
 @media(max-width:900px){#brand div{display:none}#search input{width:130px}}
-@media(max-width:600px){#search{display:none}#pad{transform:translateX(-50%) scale(.82);transform-origin:50% 100%;bottom:80px}}
+/* phones, portrait */
+@media(max-width:600px){
+  #brand,#search{display:none}
+  #nav{padding:5px}#nav button{padding:5px 10px;min-height:34px;font-size:13.5px}
+  #tog{top:64px;right:60px;flex-direction:row;overflow-x:auto;padding:5px;gap:5px;scrollbar-width:none}#tog::-webkit-scrollbar{display:none}
+  #tog button{flex:none;font-size:13px;padding:5px 10px;min-height:34px}
+  #help{top:64px;bottom:auto;right:12px;padding:5px;width:44px;height:46px;overflow:hidden;white-space:nowrap;text-indent:0;font-size:0}#help::before{content:"?";font-size:18px}
+  #helpCard{top:116px;bottom:auto;right:12px;left:12px;width:auto}
+  #dock{bottom:10px;gap:5px}.half{width:34px}
+  #time{padding:6px;gap:6px}#time button{min-height:36px;padding:6px 10px}#time .rd{min-width:96px}#time .rd b{font-size:13px}#time .rd span{font-size:12px}
+  #pad{transform:translateX(-50%) scale(.8);transform-origin:50% 100%;bottom:70px}
+  #info{top:116px;bottom:auto;max-height:112px;overflow:hidden;padding:14px 14px 10px}#info h2{font-size:24px;padding-right:130px}
+  #info.full{max-height:max(200px,calc(100% - 116px - 268px));overflow-y:auto}
+  #info .more{display:block;position:absolute;top:10px;right:54px;min-height:36px;padding:6px 12px;font-size:13.5px}
+}
+@media(max-width:420px){#now{display:none}}
+/* phones, landscape */
+@media(max-height:500px) and (min-width:601px){
+  #brand{display:none}#search input{width:150px}
+  #tog{top:66px;flex-direction:row;padding:5px;gap:5px}#tog button{font-size:13px;padding:5px 10px;min-height:34px}
+  #pad{left:10px;bottom:8px;transform:scale(.6);transform-origin:0 100%}
+  #dock{left:auto;right:10px;bottom:8px;transform:none}#now{display:none}
+  #help{top:66px;bottom:auto;right:12px}#helpCard{top:116px;bottom:auto;max-height:calc(100% - 126px);overflow:auto}
+  #info{top:66px;bottom:74px;width:min(340px,46vw)}
+}
 @media(prefers-reduced-motion:reduce){#info{transition:none}}
 </style>
 </head>
@@ -159,7 +184,7 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 <div id="helpCard" class="glass">
   <h3>Controls</h3>
   <div><span>Look / orbit</span><kbd>Drag</kbd></div>
-  <div><span>Zoom</span><kbd>Scroll</kbd></div>
+  <div><span>Zoom</span><kbd>Scroll / pinch</kbd></div>
   <div><span>Fly</span><kbd>W A S D / arrow pad</kbd></div>
   <div><span>Rise / sink</span><kbd>E / Q</kbd></div>
   <div><span>Rotate</span><kbd>Z / C</kbd></div>
@@ -170,7 +195,7 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
   <div><span>Pause / speed</span><kbd>Space  ,  .</kbd></div>
   <p class="note" style="margin:8px 0 0">Sizes are enlarged and distances compressed so everything is visible. Switch on “True distances” to see real spacing.</p>
 </div>
-<div id="hint" class="glass">Drag to look around · Scroll to zoom · Click any planet or moon</div>
+<div id="hint" class="glass">Drag to look around · Scroll or pinch to zoom · Tap any planet or moon</div>
 <div id="err"><div><h2>3D graphics couldn't start</h2><p>This app needs WebGL. Try another browser or enable hardware acceleration.</p></div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -464,7 +489,7 @@ function keplerPos(el,t,out){
 let renderer;
 try{renderer=new THREE.WebGLRenderer({canvas:$('#c'),antialias:true,logarithmicDepthBuffer:true})}catch(e){$('#err').style.display='grid'}
 if(renderer){
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+const coarse=matchMedia('(pointer:coarse)').matches;renderer.setPixelRatio(Math.min(devicePixelRatio,coarse?1.5:2));
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(55,1,.002,4e5);
 scene.add(new THREE.AmbientLight(0xffffff,.09));
@@ -673,19 +698,29 @@ function toFree(){if(cam.mode==='free')return;cam.anim=null;const d=new THREE.Ve
 
 /* pointer */
 const cv=$('#c');let down=null,hoverB=null;
-cv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,moved:0};cv.setPointerCapture(e.pointerId)});
+const touches=new Map();let pinch=null;
+function zoomBy(f){
+  if(cam.mode==='focus'){const minD=cam.target.r*(cam.target===sun?1.6:1.35);cam.dist=clamp(cam.dist*f,minD,S.mode?20000:6000)}
+  else{const d=new THREE.Vector3();camera.getWorldDirection(d);camera.position.addScaledVector(d,Math.log(1/f)*flySpeed()*2)}}
+cv.addEventListener('pointerdown',e=>{touches.set(e.pointerId,{x:e.clientX,y:e.clientY});cv.setPointerCapture(e.pointerId);
+  if(touches.size===2){const [a,b]=[...touches.values()];pinch=Math.hypot(a.x-b.x,a.y-b.y);if(down)down.moved=99;return}
+  if(touches.size>2)return;
+  down={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,moved:0,touch:e.pointerType!=='mouse'}});
 cv.addEventListener('pointermove',e=>{
+  if(touches.has(e.pointerId))touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(touches.size>=2){if(pinch){const [a,b]=[...touches.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(d>10){zoomBy(pinch/d);pinch=d}}return}
   if(down){const dx=e.clientX-down.lx,dy=e.clientY-down.ly;down.lx=e.clientX;down.ly=e.clientY;down.moved+=Math.abs(dx)+Math.abs(dy);
-    if(down.moved>4){cv.classList.add('drag');
+    if(down.moved>(down.touch?10:4)){cv.classList.add('drag');
       if(cam.mode==='focus'){cam.yaw-=dx*.005;cam.pitch=clamp(cam.pitch+dy*.005,-1.5,1.5)}else{cam.fyaw-=dx*.003;cam.fpitch=clamp(cam.fpitch-dy*.003,-1.55,1.55)}}}
   else{mouse.x=e.clientX;mouse.y=e.clientY;mouse.dirty=true}
 });
-const endDrag=e=>{if(down&&down.moved<=4)clickAt(e.clientX,e.clientY);down=null;cv.classList.remove('drag')};
-cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',()=>{down=null;cv.classList.remove('drag')});
+const endDrag=e=>{const wasPinch=touches.size>=2;touches.delete(e.pointerId);if(touches.size<2)pinch=null;
+  if(!wasPinch&&down&&down.moved<=(down.touch?10:4))clickAt(e.clientX,e.clientY,down.touch?24:10);
+  if(touches.size===0){down=null;cv.classList.remove('drag')}else if(touches.size===1&&wasPinch){const [t]=[...touches.values()];down={x:t.x,y:t.y,lx:t.x,ly:t.y,moved:99,touch:true}}};
+cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',e=>{touches.delete(e.pointerId);if(touches.size<2)pinch=null;if(!touches.size){down=null;cv.classList.remove('drag')}});
 cv.addEventListener('pointerleave',()=>{mouse.dirty=false;$('#tip').style.display='none'});
-cv.addEventListener('wheel',e=>{e.preventDefault();const f=Math.exp(e.deltaY*.0012);
-  if(cam.mode==='focus'){const minD=cam.target.r*(cam.target===sun?1.6:1.35);cam.dist=clamp(cam.dist*f,minD,S.mode?20000:6000)}
-  else{const d=new THREE.Vector3();camera.getWorldDirection(d);camera.position.addScaledVector(d,-Math.sign(e.deltaY)*flySpeed()*.25)}},{passive:false});
+cv.addEventListener('wheel',e=>{e.preventDefault();zoomBy(Math.exp(clamp(e.deltaY,-120,120)*.0012))},{passive:false});
+['gesturestart','gesturechange'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault()));
 const mouse={x:0,y:0,dirty:false};
 
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();keys[k]=true;
@@ -709,11 +744,11 @@ const proj=new THREE.Vector3();
 function screenOf(b,out){worldPos(b,tmpV);out.copy(tmpV).project(camera);const behind=out.z>1;const W=innerWidth,H=innerHeight;
   const sx=(out.x*.5+.5)*W,sy=(-out.y*.5+.5)*H;const dist=tmpV.distanceTo(camera.position);const pr=b.r/dist*(H/2)/Math.tan(camera.fov*DEG/2);
   return{sx,sy,behind,pr,dist}}
-function pick(x,y){
+function pick(x,y,slop=10){
   let best=null,bs=1e9;const W=innerWidth,H=innerHeight;
   for(const b of bodies){const s=screenOf(b,proj);if(s.behind||s.sx<-50||s.sx>W+50||s.sy<-50||s.sy>H+50)continue;
     if(b.kind==='moon'){const p=screenOf(b.parent,tmpV2);const inSys=sel===b.parent||sel?.parent===b.parent;if(!inSys&&(s.pr<1.2||Math.hypot(s.sx-p.sx,s.sy-p.sy)<Math.max(10,p.pr+4)))continue}
-    const d=Math.hypot(x-s.sx,y-s.sy),rad=Math.max(s.pr,0)+(s.pr>6?2:10);
+    const d=Math.hypot(x-s.sx,y-s.sy),rad=Math.max(s.pr,0)+(s.pr>6?Math.min(slop,6):slop);
     if(d<rad){const score=s.pr>6&&d<s.pr?s.dist*.001:d+(b.kind==='moon'?3:0);if(score<bs){bs=score;best=b}}}
   return best;
 }
@@ -725,7 +760,7 @@ function pickBelt(x,y){
   if(au>4.9&&au<5.5){const jp=worldPos(byName.get('jupiter'),new THREE.Vector3());let da=Math.abs(Math.atan2(-p.z,p.x)-Math.atan2(-jp.z,jp.x));if(da>Math.PI)da=TAU-da;if(da>.6&&da<1.5)return'trojans'}
   return null;
 }
-function clickAt(x,y){const b=pick(x,y);if(b){select(b,true);return}const bk=pickBelt(x,y);if(bk)showBelt(bk)}
+function clickAt(x,y,slop){const b=pick(x,y,slop);if(b){select(b,true);return}const bk=pickBelt(x,y);if(bk)showBelt(bk)}
 
 /* ---------------- info panel ---------------- */
 let sel=null,beltSel=null;const info=$('#info');
@@ -779,19 +814,20 @@ function renderInfo(){
   if(b.moons&&b.moons.length){const named=b.moons.filter(m=>!m.unnamed).sort((x,y)=>y.rKm-x.rKm);const show=named.slice(0,b===byName.get('saturn')||b===byName.get('jupiter')?18:30);
     const rest=b.moons.length-show.length;
     moonsHtml=`<h3>Moons (${b.moons.length})</h3><div class="chips">${show.map(m=>`<button data-m="${m.name}">${m.name}</button>`).join('')}</div>${rest?`<p class="note" style="margin-top:6px">+ ${rest} smaller moons. Zoom in or use search to explore them.</p>`:''}`}
-  info.innerHTML=`<button class="x" aria-label="Close">✕</button><h2>${b.name}</h2><div class="sub">${kindLabel(b)}</div>
+  info.innerHTML=`<button class="x" aria-label="Close">✕</button><button class="more">${info.classList.contains('full')?'Less':'Details'}</button><h2>${b.name}</h2><div class="sub">${kindLabel(b)}</div>
   <table>${rowsFor(b).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table>
   <p>${desc||''}</p>${facts.length?`<ul>${facts.map(f=>`<li>${f}</li>`).join('')}</ul>`:''}${extra}${moonsHtml}
   <div class="acts">${b.kind==='moon'?`<button data-m="${b.parent.name}">← ${b.parent.name}</button>`:''}<button data-a="fly">Fly here</button><button data-a="ov">Overview</button></div>`;
 }
 function showBelt(k){
   beltSel=k;sel=null;setMoonOrbits(null);const B=BELTS[k];
-  info.innerHTML=`<button class="x" aria-label="Close">✕</button><h2>${B.name}</h2><div class="sub">${B.kind}</div>
+  info.innerHTML=`<button class="x" aria-label="Close">✕</button><button class="more">${info.classList.contains('full')?'Less':'Details'}</button><h2>${B.name}</h2><div class="sub">${B.kind}</div>
   <table>${B.rows.map(([a,v])=>`<tr><td>${a}</td><td>${v}</td></tr>`).join('')}</table><p>${B.desc}</p><ul>${B.facts.map(f=>`<li>${f}</li>`).join('')}</ul>
   <div class="acts"><button data-a="ov">Overview</button></div>`;
   info.classList.add('open');
 }
 info.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt)return;
+  if(bt.classList.contains('more')){const f=info.classList.toggle('full');bt.textContent=f?'Less':'Details';info.scrollTop=0;return}
   if(bt.classList.contains('x')){sel=null;beltSel=null;info.classList.remove('open');setMoonOrbits(null);return}
   if(bt.dataset.m){select(byName.get(bt.dataset.m.toLowerCase()),true);return}
   if(bt.dataset.a==='fly'&&sel)flyTo(sel);if(bt.dataset.a==='ov')overview()});
