@@ -32,11 +32,32 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 #tog button{font-size:14px;text-align:left}
 #time{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:8px}
 #time .rd{min-width:132px;text-align:center;font-size:14px;line-height:1.25}#time .rd b{display:block;font-weight:600}#time .rd span{color:var(--dim);font-size:13px}
-#joyWrap{position:fixed;left:18px;bottom:18px;display:flex;align-items:flex-end;gap:10px}
-#joy{width:120px;height:120px;border-radius:50%;position:relative;touch-action:none;cursor:grab}
-#joy::after{content:"";position:absolute;inset:34px;border-radius:50%;border:1px dashed rgba(255,255,255,.14)}
-#knob{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffd896,#d88a1e);box-shadow:0 4px 14px rgba(0,0,0,.5);pointer-events:none}
-#vert{display:flex;flex-direction:column;gap:6px;padding:6px}#vert button{width:44px;height:44px;padding:0;font-size:13px}
+/* control panel */
+#pad{position:fixed;left:16px;bottom:16px;display:flex;align-items:stretch;gap:14px;padding:14px 16px 10px;border-radius:20px;
+  background:linear-gradient(160deg,rgba(34,42,60,.92),rgba(10,13,21,.94));border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 18px 40px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.1),inset 0 -2px 0 rgba(0,0,0,.4);touch-action:none;user-select:none;-webkit-user-select:none}
+#pad .sec{display:flex;flex-direction:column;align-items:center;gap:6px}
+#pad .cap{font-size:11.5px;color:var(--dim);display:flex;align-items:center;gap:6px}
+#pad .led{width:7px;height:7px;border-radius:50%;background:#3a2a12;box-shadow:inset 0 0 2px #000;transition:background .15s,box-shadow .15s}
+#pad .led.on{background:var(--gold);box-shadow:0 0 8px var(--gold),0 0 2px #fff}
+.dpad{display:grid;grid-template-columns:repeat(3,50px);grid-template-rows:repeat(3,50px);gap:5px}
+.dpad .f{grid-area:1/2}.dpad .l{grid-area:2/1}.dpad .r{grid-area:2/3}.dpad .b{grid-area:3/2}
+.hub{grid-area:2/2;border-radius:50%;margin:6px;background:radial-gradient(circle at 40% 35%,#2b3448,#0b0e15 70%);border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 2px 6px rgba(0,0,0,.7);display:grid;place-items:center}
+.hub i{display:block;width:12px;height:12px;border-radius:50%;background:#4a3415;transition:background .2s,box-shadow .2s}
+.hub i.on{background:var(--gold);box-shadow:0 0 14px 3px rgba(255,181,71,.7)}
+.key{width:50px;height:50px;padding:0;min-height:0;display:grid;place-items:center;border-radius:12px;color:#c9d3e6;
+  background:linear-gradient(180deg,#2c364b,#171d2a);border:1px solid rgba(255,255,255,.13);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 4px 0 #06080d,0 6px 10px rgba(0,0,0,.45);transition:transform .06s,box-shadow .06s,color .15s,background .15s;touch-action:none}
+.key svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.dpad .r svg{transform:rotate(90deg)}.dpad .b svg{transform:rotate(180deg)}.dpad .l svg{transform:rotate(-90deg)}
+.key:hover{background:linear-gradient(180deg,#34405a,#1b2232)}
+.key.on{transform:translateY(3px);color:#fff3dc;background:linear-gradient(180deg,#a8650f,#5c3606);border-color:rgba(255,200,120,.6);
+  box-shadow:inset 0 1px 0 rgba(255,230,180,.35),0 1px 0 #06080d,0 0 16px rgba(255,170,60,.55)}
+.lift{display:flex;flex-direction:column;gap:6px}.lift .key{width:56px;height:76px;border-radius:14px}
+.lift .key span{display:block;font-size:12px;margin-top:-2px}.lift .key{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dn svg{transform:rotate(180deg)}
+.boost{width:100%;height:34px!important;font-size:12.5px;border-radius:10px!important}
+.vdiv{width:1px;background:linear-gradient(transparent,rgba(255,255,255,.14),transparent)}
 #info{position:fixed;top:78px;right:12px;bottom:84px;width:min(360px,calc(100vw - 24px));padding:18px 18px 14px;overflow-y:auto;transform:translateX(calc(100% + 24px));transition:transform .35s ease;z-index:5}
 #info.open{transform:none}
 #info h2{margin:0;font-size:30px;line-height:1.05;font-weight:700}
@@ -60,8 +81,8 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 #helpCard.open{display:block}#helpCard h3{margin:0 0 8px;font-size:15px}#helpCard div{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px solid var(--line)}#helpCard kbd{font:inherit;color:var(--gold)}
 #hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:14px 20px;text-align:center;font-size:15px;transition:opacity .8s;pointer-events:none}
 #err{position:fixed;inset:0;display:none;place-items:center;text-align:center;padding:30px}
-@media(max-width:900px){#brand div{display:none}#search input{width:130px}#tog{top:auto;bottom:150px}}
-@media(max-width:600px){#search{display:none}#time{bottom:150px}#joyWrap{bottom:12px}}
+@media(max-width:900px){#brand div{display:none}#search input{width:130px}#time{bottom:236px}}
+@media(max-width:600px){#search{display:none}#pad{left:50%;transform:translateX(-50%);bottom:10px}}
 @media(prefers-reduced-motion:reduce){#info{transition:none}}
 </style>
 </head>
@@ -92,9 +113,26 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
   <button id="now">Today</button>
 </div>
 
-<div id="joyWrap">
-  <div id="joy" class="glass" aria-label="Flight joystick"><div id="knob"></div></div>
-  <div id="vert" class="glass"><button id="up" aria-label="Rise">Up</button><button id="down" aria-label="Sink">Down</button></div>
+<div id="pad" aria-label="Flight controls">
+  <div class="sec">
+    <div class="dpad">
+      <button class="key f" data-k="f" aria-label="Forward"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+      <button class="key l" data-k="l" aria-label="Left"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+      <div class="hub"><i id="hubLed"></i></div>
+      <button class="key r" data-k="r" aria-label="Right"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+      <button class="key b" data-k="b" aria-label="Backward"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+    </div>
+    <div class="cap"><span class="led" id="ledT"></span>Thrust</div>
+  </div>
+  <div class="vdiv"></div>
+  <div class="sec">
+    <div class="lift">
+      <button class="key up" data-k="u" aria-label="Rise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13l6-6 6 6M6 19l6-6 6 6"/></svg><span>Up</span></button>
+      <button class="key dn" data-k="d" aria-label="Sink"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13l6-6 6 6M6 19l6-6 6 6"/></svg><span>Down</span></button>
+    </div>
+    <div class="cap"><span class="led" id="ledL"></span>Lift</div>
+    <button class="key boost" data-k="x" aria-label="Boost (hold)">Boost</button>
+  </div>
 </div>
 
 <aside id="info" class="glass" aria-live="polite"></aside>
@@ -104,7 +142,7 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
   <h3>Controls</h3>
   <div><span>Look / orbit</span><kbd>Drag</kbd></div>
   <div><span>Zoom</span><kbd>Scroll</kbd></div>
-  <div><span>Fly</span><kbd>W A S D / joystick</kbd></div>
+  <div><span>Fly</span><kbd>W A S D / arrow pad</kbd></div>
   <div><span>Rise / sink</span><kbd>E / Q</kbd></div>
   <div><span>Boost</span><kbd>Shift</kbd></div>
   <div><span>Select &amp; fly to</span><kbd>Click</kbd></div>
@@ -593,7 +631,7 @@ const dateFmt=new Intl.DateTimeFormat(undefined,{year:'numeric',month:'short',da
 /* ---------------- camera ---------------- */
 const cam={mode:'focus',target:sun,dist:560,yaw:.5,pitch:.55,anim:null,look:new THREE.Vector3()};
 const overviewDist=()=>S.mode?3400:560;
-const keys={};let joy={x:0,y:0},vert=0;
+const keys={};const pad={};
 function worldPos(b,out){return b.obj.getWorldPosition(out)}
 function focusDistFor(b){
   if(b===sun)return 70;
@@ -637,13 +675,13 @@ addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const k=e.ke
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
 
-/* joystick */
-{const J=$('#joy'),K=$('#knob');let act=false;
- const mv=e=>{const r=J.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const R=42,l=Math.hypot(dx,dy);if(l>R){dx*=R/l;dy*=R/l}K.style.transform=`translate(${dx}px,${dy}px)`;joy={x:dx/R,y:dy/R}};
- J.addEventListener('pointerdown',e=>{act=true;J.setPointerCapture(e.pointerId);mv(e)});
- J.addEventListener('pointermove',e=>{if(act)mv(e)});
- const up=()=>{act=false;K.style.transform='';joy={x:0,y:0}};J.addEventListener('pointerup',up);J.addEventListener('pointercancel',up);
- for(const [id,v] of [['#up',1],['#down',-1]]){const b=$(id);b.addEventListener('pointerdown',e=>{vert=v;b.setPointerCapture(e.pointerId)});['pointerup','pointercancel','pointerleave'].forEach(ev=>b.addEventListener(ev,()=>{vert=0}))}}
+/* control panel: hold a button to fly */
+const padBtns=[...document.querySelectorAll('#pad .key')];
+for(const b of padBtns){const k=b.dataset.k;
+  b.addEventListener('pointerdown',e=>{e.preventDefault();pad[k]=true;try{b.setPointerCapture(e.pointerId)}catch(_){}});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>{pad[k]=false}));
+  b.addEventListener('contextmenu',e=>e.preventDefault())}
+addEventListener('blur',()=>{for(const k in pad)pad[k]=false});
 
 /* picking */
 const proj=new THREE.Vector3();
@@ -751,9 +789,12 @@ function frame(now){
   updateBodies(simT);scene.updateMatrixWorld();
 
   // movement input
-  const f=(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0)-joy.y,st=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x,vv=(keys.e?1:0)-(keys.q?1:0)+vert;
+  const act={f:!!(keys.w||keys.arrowup||pad.f),b:!!(keys.s||keys.arrowdown||pad.b),l:!!(keys.a||keys.arrowleft||pad.l),r:!!(keys.d||keys.arrowright||pad.r),u:!!(keys.e||pad.u),d:!!(keys.q||pad.d),x:!!(keys.shift||pad.x)};
+  for(const b of padBtns){const on=act[b.dataset.k];if(b._on!==on){b._on=on;b.classList.toggle('on',on)}}
+  const thr=act.f||act.b||act.l||act.r,lift=act.u||act.d;$('#ledT').classList.toggle('on',thr);$('#ledL').classList.toggle('on',lift);$('#hubLed').classList.toggle('on',thr||lift);
+  const f=act.f-act.b,st=act.r-act.l,vv=act.u-act.d;
   if(Math.abs(f)+Math.abs(st)+Math.abs(vv)>.05){
-    toFree();const sp=flySpeed()*(keys.shift?5:1)*dt;const q=camera.quaternion;
+    toFree();const sp=flySpeed()*(act.x?5:1)*dt;const q=camera.quaternion;
     camera.position.addScaledVector(new THREE.Vector3(0,0,-1).applyQuaternion(q),f*sp).addScaledVector(new THREE.Vector3(1,0,0).applyQuaternion(q),st*sp).addScaledVector(new THREE.Vector3(0,1,0),vv*sp);
   }
   if(cam.mode==='focus'){
