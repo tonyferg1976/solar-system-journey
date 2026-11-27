@@ -115,12 +115,9 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 </div>
 
 <div id="pad" aria-label="Flight controls">
-  <div class="sec">
-    <div class="lift">
-      <button class="key up" data-k="u" aria-label="Rise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13l6-6 6 6M6 19l6-6 6 6"/></svg><span>Up</span></button>
-      <button class="key dn" data-k="d" aria-label="Sink"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13l6-6 6 6M6 19l6-6 6 6"/></svg><span>Down</span></button>
-    </div>
-    <div class="cap"><span class="led" id="ledL"></span>Lift</div>
+  <div class="sec boostcol">
+    <button class="key" data-k="x" aria-label="Boost (hold)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Boost</button>
+    <div class="cap"><span class="led" id="ledB"></span>5× speed</div>
   </div>
   <div class="vdiv"></div>
   <div class="sec">
@@ -134,9 +131,12 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
     <div class="cap"><span class="led" id="ledT"></span>Thrust</div>
   </div>
   <div class="vdiv"></div>
-  <div class="sec boostcol">
-    <button class="key" data-k="x" aria-label="Boost (hold)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Boost</button>
-    <div class="cap"><span class="led" id="ledB"></span>5× speed</div>
+  <div class="sec">
+    <div class="lift">
+      <button class="key up" data-k="u" aria-label="Rise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13l6-6 6 6M6 19l6-6 6 6"/></svg><span>Up</span></button>
+      <button class="key dn" data-k="d" aria-label="Sink"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13l6-6 6 6M6 19l6-6 6 6"/></svg><span>Down</span></button>
+    </div>
+    <div class="cap"><span class="led" id="ledL"></span>Lift</div>
   </div>
 </div>
 
