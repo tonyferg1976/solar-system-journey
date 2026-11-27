@@ -69,7 +69,8 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 #info.open{transform:none}
 #info h2{margin:0;font-size:30px;line-height:1.05;font-weight:700}
 #info .sub{color:var(--gold);font-size:14px;margin:4px 0 12px}
-#info .more{display:none}
+#info .morebar{display:none}
+@keyframes bob{0%,100%{transform:translateY(-1px)}50%{transform:translateY(3px)}}
 #info .x{position:absolute;top:10px;right:10px;width:36px;height:36px;padding:0;min-height:0}
 #info table{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 12px}
 #info td{padding:5px 0;border-bottom:1px solid var(--line);vertical-align:top}#info td:first-child{color:var(--dim);padding-right:10px;white-space:nowrap}#info td:last-child{text-align:right}
@@ -101,9 +102,17 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
   #dock{bottom:10px;gap:5px}.half{width:34px}
   #time{padding:6px;gap:6px}#time button{min-height:36px;padding:6px 10px}#time .rd{min-width:96px}#time .rd b{font-size:13px}#time .rd span{font-size:12px}
   #pad{transform:translateX(-50%) scale(.8);transform-origin:50% 100%;bottom:70px}
-  #info{top:116px;bottom:auto;max-height:112px;overflow:hidden;padding:14px 14px 10px}#info h2{font-size:24px;padding-right:130px}
+  #info{top:116px;bottom:auto;max-height:168px;overflow:hidden;padding:14px 14px 0}#info h2{font-size:24px;padding-right:44px}
   #info.full{max-height:max(200px,calc(100% - 116px - 268px));overflow-y:auto}
-  #info .more{display:block;position:absolute;top:10px;right:54px;min-height:36px;padding:6px 12px;font-size:13.5px}
+  #info .morebar{display:flex;justify-content:center;position:sticky;bottom:0;margin:0 -14px;padding:26px 0 10px;
+    background:linear-gradient(to bottom,rgba(10,14,24,0),rgba(10,14,24,.97) 48%)}
+  #info .more{display:flex;align-items:center;gap:8px;border-radius:999px;padding:6px 18px 6px 14px;min-height:38px;font-size:14px;font-weight:600;
+    color:#ffe2b0;background:linear-gradient(180deg,rgba(255,181,71,.2),rgba(255,140,40,.1));border:1px solid rgba(255,181,71,.5);box-shadow:0 0 14px rgba(255,170,60,.18)}
+  #info .more:active{transform:scale(.97)}
+  #info .more i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:rgba(255,181,71,.22)}
+  #info .more svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .35s ease}
+  #info:not(.full) .more i{animation:bob 1.6s ease-in-out infinite}
+  #info.full .more svg{transform:rotate(180deg)}
 }
 @media(max-width:420px){#now{display:none}}
 /* phones, landscape */
@@ -115,7 +124,7 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
   #help{top:66px;bottom:auto;right:12px}#helpCard{top:116px;bottom:auto;max-height:calc(100% - 126px);overflow:auto}
   #info{top:66px;bottom:74px;width:min(340px,46vw)}
 }
-@media(prefers-reduced-motion:reduce){#info{transition:none}}
+@media(prefers-reduced-motion:reduce){#info{transition:none}#info .more i{animation:none!important}}
 </style>
 </head>
 <body>
@@ -814,20 +823,20 @@ function renderInfo(){
   if(b.moons&&b.moons.length){const named=b.moons.filter(m=>!m.unnamed).sort((x,y)=>y.rKm-x.rKm);const show=named.slice(0,b===byName.get('saturn')||b===byName.get('jupiter')?18:30);
     const rest=b.moons.length-show.length;
     moonsHtml=`<h3>Moons (${b.moons.length})</h3><div class="chips">${show.map(m=>`<button data-m="${m.name}">${m.name}</button>`).join('')}</div>${rest?`<p class="note" style="margin-top:6px">+ ${rest} smaller moons. Zoom in or use search to explore them.</p>`:''}`}
-  info.innerHTML=`<button class="x" aria-label="Close">✕</button><button class="more">${info.classList.contains('full')?'Less':'Details'}</button><h2>${b.name}</h2><div class="sub">${kindLabel(b)}</div>
+  info.innerHTML=`<button class="x" aria-label="Close">✕</button><h2>${b.name}</h2><div class="sub">${kindLabel(b)}</div>
   <table>${rowsFor(b).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table>
   <p>${desc||''}</p>${facts.length?`<ul>${facts.map(f=>`<li>${f}</li>`).join('')}</ul>`:''}${extra}${moonsHtml}
-  <div class="acts">${b.kind==='moon'?`<button data-m="${b.parent.name}">← ${b.parent.name}</button>`:''}<button data-a="fly">Fly here</button><button data-a="ov">Overview</button></div>`;
+  <div class="acts">${b.kind==='moon'?`<button data-m="${b.parent.name}">← ${b.parent.name}</button>`:''}<button data-a="fly">Fly here</button><button data-a="ov">Overview</button></div><div class="morebar"><button class="more" aria-expanded="${info.classList.contains('full')}"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></i><span>${info.classList.contains('full')?'Show less':'Show more'}</span></button></div>`;
 }
 function showBelt(k){
   beltSel=k;sel=null;setMoonOrbits(null);const B=BELTS[k];
-  info.innerHTML=`<button class="x" aria-label="Close">✕</button><button class="more">${info.classList.contains('full')?'Less':'Details'}</button><h2>${B.name}</h2><div class="sub">${B.kind}</div>
+  info.innerHTML=`<button class="x" aria-label="Close">✕</button><h2>${B.name}</h2><div class="sub">${B.kind}</div>
   <table>${B.rows.map(([a,v])=>`<tr><td>${a}</td><td>${v}</td></tr>`).join('')}</table><p>${B.desc}</p><ul>${B.facts.map(f=>`<li>${f}</li>`).join('')}</ul>
-  <div class="acts"><button data-a="ov">Overview</button></div>`;
+  <div class="acts"><button data-a="ov">Overview</button></div><div class="morebar"><button class="more" aria-expanded="${info.classList.contains('full')}"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></i><span>${info.classList.contains('full')?'Show less':'Show more'}</span></button></div>`;
   info.classList.add('open');
 }
 info.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt)return;
-  if(bt.classList.contains('more')){const f=info.classList.toggle('full');bt.textContent=f?'Less':'Details';info.scrollTop=0;return}
+  if(bt.classList.contains('more')){const f=info.classList.toggle('full');bt.querySelector('span').textContent=f?'Show less':'Show more';bt.setAttribute('aria-expanded',f);info.scrollTop=0;return}
   if(bt.classList.contains('x')){sel=null;beltSel=null;info.classList.remove('open');setMoonOrbits(null);return}
   if(bt.dataset.m){select(byName.get(bt.dataset.m.toLowerCase()),true);return}
   if(bt.dataset.a==='fly'&&sel)flyTo(sel);if(bt.dataset.a==='ov')overview()});
