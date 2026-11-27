@@ -41,7 +41,16 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 .half:disabled{opacity:.32;cursor:default}
 #time .rd{min-width:132px;text-align:center;font-size:14px;line-height:1.25}#time .rd b{display:block;font-weight:600}#time .rd span{color:var(--dim);font-size:13px}
 /* control panel */
-#pad{display:flex;align-items:stretch;gap:22px;padding:14px 26px 10px;border-radius:22px;
+.padrow{display:flex;align-items:stretch;gap:22px}
+.homebtn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:8px 14px;border-radius:14px;font-size:15px;font-weight:600;color:#ffe2b0;
+  background:linear-gradient(180deg,#2e3850,#171d2a);border:1px solid rgba(255,181,71,.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 4px 0 #06080d,0 6px 10px rgba(0,0,0,.4);transition:transform .06s,box-shadow .15s,background .15s}
+.homebtn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.homebtn kbd{font:inherit;font-size:11.5px;font-weight:500;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:0 6px;margin-left:4px}
+.homebtn:hover{background:linear-gradient(180deg,#38445f,#1b2232);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 4px 0 #06080d,0 0 18px rgba(255,170,60,.3)}
+.homebtn:active{transform:translateY(3px);box-shadow:inset 0 1px 0 rgba(255,230,180,.3),0 1px 0 #06080d;background:linear-gradient(180deg,#a8650f,#5c3606);color:#fff3dc}
+@media(pointer:coarse){.homebtn kbd{display:none}}
+#pad{display:flex;flex-direction:column;gap:12px;padding:14px 26px 10px;border-radius:22px;
   background:linear-gradient(160deg,rgba(34,42,60,.92),rgba(10,13,21,.94));border:1px solid rgba(255,255,255,.12);
   box-shadow:0 18px 40px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.1),inset 0 -2px 0 rgba(0,0,0,.4);touch-action:none;user-select:none;-webkit-user-select:none}
 #pad .sec{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -91,7 +100,7 @@ button.on{background:rgba(255,181,71,.18);border-color:rgba(255,181,71,.55);colo
 #hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:14px 20px;text-align:center;font-size:15px;transition:opacity .8s;pointer-events:none}
 #err{position:fixed;inset:0;display:none;place-items:center;text-align:center;padding:30px}
 /* console: journeys tile | control pad | quiz tile */
-#console{position:fixed;left:50%;transform:translateX(-50%);bottom:86px;display:flex;align-items:stretch;gap:12px}
+#console{position:fixed;left:50%;transform:translateX(-50%);bottom:86px;width:max-content;display:flex;align-items:stretch;gap:12px}
 .tile{width:124px;min-height:0;padding:14px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border-radius:22px;color:var(--ink);text-align:center;
   background:linear-gradient(160deg,rgba(34,42,60,.92),rgba(10,13,21,.94));border:1px solid rgba(255,255,255,.12);
   box-shadow:0 18px 40px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.1),inset 0 -2px 0 rgba(0,0,0,.4);transition:box-shadow .2s,border-color .2s,transform .1s}
@@ -161,7 +170,7 @@ button.primary:hover{background:linear-gradient(180deg,#ffd994,#f5ab45)}
   #tour{top:116px;padding:12px 14px 10px}#tour h3{font-size:22px}#tour p{font-size:14.5px;margin:6px 0 8px}#tour .tctl .ti span{display:none}
   #mcard{padding:18px 16px 14px}#mcard h2{font-size:22px}#mcard .qq{font-size:19px}
   #info{top:116px;bottom:auto;max-height:168px;overflow:hidden;padding:14px 14px 0}#info h2{font-size:24px;padding-right:44px}
-  #info.full{max-height:max(200px,calc(100% - 116px - 268px));overflow-y:auto}
+  #info.full{max-height:max(200px,calc(100% - 116px - 306px));overflow-y:auto}
   #info .morebar{display:flex;justify-content:center;position:sticky;bottom:0;margin:0 -14px;padding:26px 0 10px;
     background:linear-gradient(to bottom,rgba(10,14,24,0),rgba(10,14,24,.97) 48%)}
   #info .more{display:flex;align-items:center;gap:8px;border-radius:999px;padding:6px 18px 6px 14px;min-height:38px;font-size:14px;font-weight:600;
@@ -222,6 +231,8 @@ button.primary:hover{background:linear-gradient(180deg,#ffd994,#f5ab45)}
 <div id="console">
 <button id="jTile" class="tile" aria-label="Journeys: guided tours"><span class="tic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="6" r="2.2"/><path d="M7 17.2c4-1 2.5-5.5 6-6.2s3.5-2.8 4.4-3.6"/><path d="M12 4.5l.6 1.6 1.7.1-1.3 1.1.4 1.6-1.4-.9-1.4.9.4-1.6-1.3-1.1 1.7-.1z"/></svg></span><b>Journeys</b><span>7 guided tours</span></button>
 <div id="pad" aria-label="Flight controls">
+  <button id="home" class="homebtn" aria-label="Return home to the solar system view"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg>Return home<kbd>H</kbd></button>
+  <div class="padrow">
   <div class="sec">
     <div class="lift">
       <button class="key" data-k="rl" aria-label="Rotate left"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4.5v5h5"/></svg><span>Left</span></button>
@@ -248,6 +259,7 @@ button.primary:hover{background:linear-gradient(180deg,#ffd994,#f5ab45)}
     </div>
     <div class="cap"><span class="led" id="ledL"></span>Lift</div>
   </div>
+  </div>
 </div>
 <button id="qTile" class="tile" aria-label="Take the quiz"><span class="tic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.4a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><path d="M12 17.6v.2"/></svg></span><b>Quiz</b><span class="qbest">Test yourself</span><span class="qlast">10 questions</span></button>
 </div>
@@ -266,6 +278,7 @@ button.primary:hover{background:linear-gradient(180deg,#ffd994,#f5ab45)}
   <div><span>Rotate</span><kbd>Z / C</kbd></div>
   <div><span>Boost</span><kbd>Shift</kbd></div>
   <div><span>Select &amp; fly to</span><kbd>Click</kbd></div>
+  <div><span>Return home</span><kbd>H</kbd></div>
   <div><span>Back out</span><kbd>Esc</kbd></div>
   <div><span>Previous / next object</span><kbd>Backspace, Alt+← / →</kbd></div>
   <div><span>Pause / speed</span><kbd>Space  ,  .</kbd></div>
@@ -803,6 +816,7 @@ addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(modal.cla
   if(k===' '){e.preventDefault();togglePause()}
   if(k===','||k==='<')setSpeed(speedI-1);if(k==='.'||k==='>')setSpeed(speedI+1);
   if(k==='backspace'||(e.altKey&&k==='arrowleft')){e.preventDefault();goHist(-1);return}if(e.altKey&&k==='arrowright'){e.preventDefault();goHist(1);return}
+  if(k==='h'&&!e.metaKey&&!e.ctrlKey&&!e.altKey){askHome();return}
   if(k==='escape'){if(modal.classList.contains('open')){closeModal();return}if(tour){endTour();return}if(sel&&sel.kind==='moon')select(sel.parent,true);else overview()}});
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
@@ -855,6 +869,15 @@ const histName=e=>e==='overview'?'solar system view':e.name;
 function updHist(){const bk=$('#hBack'),fw=$('#hFwd'),p=hist.list[hist.i-1],n=hist.list[hist.i+1];
   bk.disabled=!p;fw.disabled=!n;bk.title=p?'Back to '+histName(p):'Back';fw.title=n?'Forward to '+histName(n):'Forward';bk.setAttribute('aria-label',bk.title);fw.setAttribute('aria-label',fw.title)}
 function pushHist(e){if(hist.nav||hist.list[hist.i]===e)return;hist.list=hist.list.slice(0,hist.i+1);hist.list.push(e);if(hist.list.length>100)hist.list.shift();hist.i=hist.list.length-1;updHist()}
+function goHome(){endTour();closeModal();sel=null;beltSel=null;info.classList.remove('open');info.classList.remove('full');setMoonOrbits(null);
+  hist.nav=true;overview();hist.nav=false;cam.anim.dur=2.6;hist.list=['overview'];hist.i=0;updHist()}
+function askHome(){const n=Math.max(0,hist.list.length-1);
+  if(n===0&&!tour){goHome();return}
+  const parts=[];if(n)parts.push(`clear the ${n} place${n===1?'':'s'} in your Back and Forward history`);if(tour)parts.push(`end the “${tour.j.title}” journey`);
+  openModal(`<button class="mx" data-c="close" aria-label="Close">✕</button><div class="qend"><div class="ring" style="width:96px;height:96px"><svg viewBox="0 0 24 24" style="width:40px;height:40px;fill:none;stroke:#ffd59a;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M3 11l9-7 9 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg></div>
+  <h2>Return home?</h2><p class="lead">You’ll fly back to the starting view of the whole solar system. This will also ${parts.join(' and ')}.</p>
+  <div class="acts2"><button data-c="home" class="primary">Yes, return home</button><button data-c="close">Cancel</button></div></div>`)}
+$('#home').onclick=askHome;
 function goHist(d){const j=hist.i+d;if(j<0||j>=hist.list.length)return;hist.i=j;hist.nav=true;const e=hist.list[j];if(e==='overview')overview();else select(e,true);hist.nav=false;updHist()}
 $('#hBack').onclick=()=>goHist(-1);$('#hFwd').onclick=()=>goHist(1);
 function select(b,fly){
@@ -1013,6 +1036,7 @@ function showJourneys(){openModal(`<button class="mx" data-c="close" aria-label=
   <div class="jlist">${JOURNEYS.map(j=>`<button class="jitem" data-j="${j.id}" style="--jc:${j.color}"><span class="jdot"></span><span class="jt"><b>${j.title}</b><span>${j.desc}</span></span><span class="jn">${j.stops.length} stops</span></button>`).join('')}</div>`)}
 mcard.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt)return;
   if(bt.dataset.c==='close'){closeModal();return}
+  if(bt.dataset.c==='home'){goHome();return}
   if(bt.dataset.j){startTour(JOURNEYS.find(j=>j.id===bt.dataset.j));return}
   if(bt.dataset.q!==undefined){answer(+bt.dataset.q);return}
   if(bt.dataset.c==='next'){quiz.i++;renderQuiz();return}
