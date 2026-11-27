@@ -9,7 +9,7 @@ An interactive 3D solar system explorer that runs in the browser, built with [Th
 - 465 moons: every named moon with real orbit and size data, plus Jupiter's and Saturn's unnamed small moons placed on orbits typical of their families
 - The asteroid belt, Jupiter's trojan asteroids and the Kuiper belt
 - Click any object to fly to it; planets show their moons orbiting with fading trails, and an info panel gives stats, a description and facts
-- Free flight with WASD or the on-screen control panel (thrust pad, lift and boost buttons), orbit and zoom with the mouse
+- Free flight with WASD or the on-screen control panel (thrust pad, rotate and lift buttons), orbit and zoom with the mouse
 - Time controls from real time up to 10 years per second, search, labels and orbit toggles, and a "true distances" mode
 
 ## Run it
@@ -30,7 +30,8 @@ Three.js r128 loads from cdnjs, so an internet connection is needed.
 | Zoom | Scroll |
 | Fly | W A S D or thrust pad |
 | Rise / sink | E / Q or Up / Down |
-| Boost | Shift or Boost button |
+| Rotate left / right | Z / C or Rotate buttons |
+| Boost | Shift |
 | Select and fly to | Click |
 | Back out | Esc |
 | Pause / speed | Space, `,` and `.` |
