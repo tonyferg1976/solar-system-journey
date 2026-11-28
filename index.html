@@ -156,6 +156,20 @@ button.primary:hover{background:linear-gradient(180deg,#ffd994,#f5ab45)}
 .acts2{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:6px}
 @media(prefers-reduced-motion:reduce){.ring.best{animation:none}#tour{transition:none}}
 @media(max-width:900px){#brand div{display:none}#search input{width:130px}}
+/* start screen + sound button */
+.splash{text-align:center;padding:6px 4px 2px}
+.splash h2{font-size:34px!important;padding-right:0!important;margin-bottom:4px!important}.splash .lead{font-size:16px}
+.orbitart{position:relative;width:200px;height:200px;margin:6px auto 14px}
+.orbitart .sun{position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff3b0,#ffb547 55%,#e0731a);box-shadow:0 0 30px 8px rgba(255,170,60,.55)}
+.orbitart .orb{position:absolute;left:50%;top:50%;border:1px solid rgba(150,170,255,.25);border-radius:50%;animation:spin linear infinite}
+.orbitart .orb i{position:absolute;top:50%;left:-6px;width:12px;height:12px;margin-top:-6px;border-radius:50%}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bigstart{font-size:19px!important;padding:14px 26px!important;border-radius:999px!important;min-height:56px;box-shadow:0 0 28px rgba(255,170,60,.5);animation:pulse 2.2s ease-in-out infinite}
+.bigstart svg{width:22px;height:22px;fill:currentColor;stroke:none}
+@keyframes pulse{50%{box-shadow:0 0 44px rgba(255,170,60,.8)}}
+.splash .note{margin-top:14px;font-size:13.5px}
+.snd{display:flex;align-items:center;gap:8px}.snd svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media(prefers-reduced-motion:reduce){.orbitart .orb,.bigstart{animation:none}}
 /* welcome screen */
 .welcome h2{font-size:30px!important}.welcome .lead{font-size:16px;color:var(--ink)!important;opacity:.9}
 .wgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:6px 0 16px}
@@ -242,7 +256,7 @@ body.nospeech .listen{display:none}
   <button id="tLbl" class="on">Labels</button>
   <button id="tScale">True distances</button>
   <button id="tReset">Overview</button>
-  <button id="tNar" class="on" title="Read out facts about each world you visit">Narrator</button>
+  <button id="tNar" class="on snd" aria-pressed="true" title="Turn the narrator voice on or off">Sound on</button>
 </div>
 
 <div id="console">
@@ -1283,16 +1297,16 @@ const WI={look:'<path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx
  ear:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/>',ship:'<path d="M12 3c3 2.5 4.5 6 4.5 10l-2 3h-5l-2-3C7.5 9 9 5.5 12 3z"/><circle cx="12" cy="10" r="1.8"/><path d="M9.5 16l-2.5 4M14.5 16l2.5 4"/>',
  route:'<circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="6" r="2.2"/><path d="M7 17.2c4-1 2.5-5.5 6-6.2s3.5-2.8 4.4-3.6"/>',quiz:'<circle cx="12" cy="12" r="9"/><path d="M9.3 9.4a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><path d="M12 17.6v.2"/>'};
 const WELCOME=[['look','Look around','Drag to spin the view. Scroll or pinch to zoom in and out.'],['tap','Visit a world','Tap any planet or moon to fly there and discover its secrets.'],
- ['ear','Listen and learn','The narrator reads out facts about every world you visit. Switch her on or off with the Narrator button.'],['ship','Fly your spaceship','Use the arrow buttons to fly anywhere. Return home brings you back here.'],
+ ['ear','Listen and learn','The narrator reads out facts about every world you visit. Tap Sound on or off to mute or unmute her.'],['ship','Fly your spaceship','Use the arrow buttons to fly anywhere. Return home brings you back here.'],
  ['route','Go on a journey','Guided tours fly you to volcanoes, ocean worlds, giant rings and more.'],['quiz','Take the quiz','Test what you have learned and try to beat your best score.']];
 const WELCOME_SPEECH=`Welcome, space explorer! This is our solar system: the Sun, eight planets, dwarf planets and ${moonCount} moons, all moving around the Sun right now. You can drag to look around, and tap any planet or moon to fly there. I'll tell you all about every world you visit. Use the arrow buttons to fly your spaceship anywhere you like. Try a journey for a guided tour, or take the quiz to test what you've learned. Let's start exploring!`;
 function showWelcome(){let hide=false;try{hide=localStorage.getItem('sse-welcome')==='off'}catch(_){}
   openModal(`<div class="welcome"><button class="mx" data-c="wclose" aria-label="Close">✕</button><h2>Welcome, space explorer!</h2>
   <p class="lead">This is our solar system: the Sun, 8 planets, dwarf planets and ${moonCount} moons, all moving around the Sun right now. Where will you go first?</p>
   <div class="wgrid">${WELCOME.map(([ic,t,d])=>`<div class="witem"><span class="wi"><svg viewBox="0 0 24 24" aria-hidden="true">${WI[ic]}</svg></span><div><b>${t}</b><span>${d}</span></div></div>`).join('')}</div>
-  <div class="wacts"><button data-c="wstart" class="primary">Start exploring</button><button data-c="wjourney">Take a journey</button>${listenBtn('welcome','Hear this')}</div>
+  <div class="wacts"><button data-c="wstart" class="primary">Start exploring</button><button data-c="wjourney">Take a journey</button>${listenBtn('welcome','Hear this')}${say.ok?'<button class="sndtoggle snd"></button>':''}</div>
   <label class="wfoot"><input type="checkbox" id="wHide" ${hide?'checked':''}> Don’t show this when the app opens</label></div>`);
-  $('#hint').style.display='none';updListen();const st=mcard.querySelector('[data-c=wstart]');if(st)st.focus({preventScroll:true})}
+  $('#hint').style.display='none';updListen();setSoundBtns();const st=mcard.querySelector('[data-c=wstart]');if(st)st.focus({preventScroll:true})}
 function closeWelcome(){const c=$('#wHide');if(c){try{localStorage.setItem('sse-welcome',c.checked?'off':'on')}catch(_){}}if(say.owner==='welcome')stopSpeech();closeModal()}
 mcard.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt)return;
   if(bt.classList.contains('listen')&&bt.dataset.owner==='welcome'){if(say.owner==='welcome')stopSpeech();else speak(WELCOME_SPEECH,'welcome');return}
@@ -1300,11 +1314,22 @@ mcard.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt)re
   if(bt.dataset.c==='wstart'){closeWelcome();if(narratorOn&&say.ok)speak("Let's go! Tap any planet or moon to fly there and learn all about it.",'welcome');return}
   if(bt.dataset.c==='wjourney'){closeWelcome();showJourneys();return}});
 $('#showWelcome').onclick=()=>{$('#helpCard').classList.remove('open');showWelcome()};
-$('#tNar').classList.toggle('on',narratorOn);
-$('#tNar').onclick=e=>{narratorOn=!narratorOn;e.currentTarget.classList.toggle('on',narratorOn);try{localStorage.setItem('sse-narrator',narratorOn?'on':'off')}catch(_){}
-  if(!narratorOn)stopSpeech();else if(sel&&info.classList.contains('open'))narrate('info:'+sel.name);if(tour){tour.narrate=narratorOn;renderTour()}};
+function setSoundBtns(){for(const b of document.querySelectorAll('#tNar,.sndtoggle')){b.classList.toggle('on',narratorOn);b.setAttribute('aria-pressed',narratorOn);b.innerHTML=(narratorOn?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>')+'<span>'+(narratorOn?'Sound on':'Sound off')+'</span>'}}
+function toggleSound(){narratorOn=!narratorOn;setSoundBtns();try{localStorage.setItem('sse-narrator',narratorOn?'on':'off')}catch(_){}
+  if(!narratorOn)stopSpeech();else if(modal.classList.contains('open')&&$('#wHide'))speak(WELCOME_SPEECH,'welcome');else if(sel&&info.classList.contains('open'))narrate('info:'+sel.name);if(tour){tour.narrate=narratorOn;renderTour()}}
+$('#tNar').onclick=toggleSound;setSoundBtns();
 if(!say.ok)$('#tNar').style.display='none';
-{let showIt=true;try{showIt=localStorage.getItem('sse-welcome')!=='off'}catch(_){}if(showIt)showWelcome()}
+function showSplash(){
+  const orbs=[[70,'#9e958b',7],[104,'#5a9cff',11],[140,'#d9a86f',17],[176,'#8fd3dc',26]];
+  openModal(`<div class="splash"><div class="orbitart" aria-hidden="true"><div class="sun"></div>${orbs.map(([d,c,t],k)=>`<div class="orb" style="width:${d}px;height:${d}px;margin:${-d/2}px;animation-duration:${t}s;animation-delay:${-k*3}s"><i style="background:${c};box-shadow:0 0 8px ${c}"></i></div>`).join('')}</div>
+  <h2>Solar System Explorer</h2><p class="lead">Fly between planets, visit ${moonCount} moons and discover amazing facts.</p>
+  <button data-c="sgo" class="primary bigstart"><svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg>Start the adventure</button>
+  ${say.ok?`<p class="note">The narrator will read things out loud for you. Tap <b>Sound on</b> at any time to mute her.</p><button class="sndtoggle snd" style="margin:4px auto 0"></button>`:''}</div>`);
+  setSoundBtns();$('#hint').style.display='none';const g=mcard.querySelector('[data-c=sgo]');if(g)g.focus({preventScroll:true})}
+mcard.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt)return;
+  if(bt.classList.contains('sndtoggle')){toggleSound();return}
+  if(bt.dataset.c==='sgo'){showWelcome();if(narratorOn&&say.ok)speak(WELCOME_SPEECH,'welcome');return}});
+{let showIt=true;try{showIt=localStorage.getItem('sse-welcome')!=='off'}catch(_){}if(showIt)showSplash()}
 requestAnimationFrame(frame);
 }
 }
