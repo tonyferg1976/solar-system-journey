@@ -156,6 +156,34 @@ button.primary:hover{background:linear-gradient(180deg,#ffd994,#f5ab45)}
 .acts2{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:6px}
 @media(prefers-reduced-motion:reduce){.ring.best{animation:none}#tour{transition:none}}
 @media(max-width:900px){#brand div{display:none}#search input{width:130px}}
+/* stow hatch: hide / launch the control console */
+#console>*{transition:transform .55s cubic-bezier(.5,-.25,.6,1),opacity .45s ease,filter .45s ease;transition-delay:var(--d2,0s)}
+body.stowed #console>*{transform:translateY(130%) scaleY(.35);opacity:0;filter:blur(8px);transition-delay:var(--d,0s);pointer-events:none}
+#hBack{--d:0s;--d2:.24s}#time{--d:.05s;--d2:.2s}#hFwd{--d:.1s;--d2:.16s}#jTile{--d:.14s;--d2:.1s}#pad{--d:.18s;--d2:.05s}#qTile{--d:.22s;--d2:0s}
+#stow{position:fixed;left:var(--hl,50%);bottom:var(--hb,360px);transform:translateX(-50%);z-index:4;width:max-content;white-space:nowrap;display:flex;align-items:center;gap:10px;min-height:38px;padding:5px 16px 5px 6px;border-radius:999px;
+  font-size:14px;font-weight:600;color:#ffe2b0;background:linear-gradient(180deg,#2c364c,#121722);border:1px solid rgba(255,181,71,.45);
+  box-shadow:0 8px 22px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12),0 0 0 4px rgba(10,13,21,.55);transition:bottom .7s cubic-bezier(.65,0,.35,1),box-shadow .3s,background .3s}
+#stow:hover{box-shadow:0 8px 22px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.14),0 0 18px rgba(255,170,60,.4)}
+#stow .orbi{position:relative;width:28px;height:28px;flex:none;border-radius:50%;background:radial-gradient(circle at 38% 32%,#ffd896,#d8841c 60%,#7a3e08);box-shadow:0 0 10px rgba(255,170,60,.45)}
+#stow .orbi::before{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(160,180,255,.45);transform:rotateX(70deg) rotateZ(-20deg)}
+#stow .orbi i{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:#bcd0ff;box-shadow:0 0 6px #9fb8ff;animation:moon 2.6s linear infinite paused;animation-delay:-1.3s}
+#stow:hover .orbi i,body.stowed #stow .orbi i{animation-play-state:running}
+@keyframes moon{from{transform:rotate(0) translateX(19px) rotate(0)}to{transform:rotate(360deg) translateX(19px) rotate(-360deg)}}
+#stow .chev{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .5s}
+body.stowed #stow .chev{transform:rotate(180deg)}
+#stow .lights{display:none;gap:4px}#stow .lights b{flex:none;width:6px;height:6px;border-radius:50%;background:#5a3c12;animation:land 1.2s infinite}
+#stow .lights b:nth-child(2){animation-delay:.2s}#stow .lights b:nth-child(3){animation-delay:.4s}
+@keyframes land{0%,60%,100%{background:#5a3c12;box-shadow:none}20%{background:#ffcf7a;box-shadow:0 0 8px #ffb547}}
+body.stowed #stow{background:linear-gradient(180deg,#3a2a12,#1a1309);animation:beacon 2.4s ease-in-out infinite}
+body.stowed #stow .lights{display:flex}
+@keyframes beacon{50%{box-shadow:0 8px 22px rgba(0,0,0,.5),0 0 24px rgba(255,170,60,.55),0 0 0 4px rgba(10,13,21,.55)}}
+#beam{position:fixed;left:var(--hl,50%);bottom:var(--bb,14px);height:3px;width:0;transform:translateX(-50%);border-radius:3px;pointer-events:none;z-index:3;opacity:0;
+  background:linear-gradient(90deg,transparent,#ffd896 20%,#fff 50%,#ffd896 80%,transparent);box-shadow:0 0 18px 4px rgba(255,190,90,.65)}
+#beam.go{animation:beam .9s ease-out}
+@keyframes beam{0%{width:0;opacity:0}25%{opacity:1}60%{width:var(--bw,620px);opacity:.9}100%{width:var(--bw,620px);opacity:0}}
+@media(pointer:coarse){#stow kbd{display:none}}
+#stow kbd{font:inherit;font-size:11px;font-weight:500;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:0 5px}
+@media(prefers-reduced-motion:reduce){#console>*{transition:opacity .2s;transition-delay:0s!important}body.stowed #console>*{transform:none;filter:none}#stow,#stow .orbi i,#stow .lights b,body.stowed #stow{animation:none;transition:none}#beam.go{animation:none}}
 /* start screen + sound button */
 .splash{text-align:center;padding:6px 4px 2px}
 .splash h2{font-size:34px!important;padding-right:0!important;margin-bottom:4px!important}.splash .lead{font-size:16px}
@@ -259,6 +287,8 @@ body.nospeech .listen{display:none}
   <button id="tNar" class="on snd" aria-pressed="true" title="Turn the narrator voice on or off">Sound on</button>
 </div>
 
+<button id="stow" aria-expanded="true" aria-controls="console" title="Hide or show the controls (M)"><span class="orbi" aria-hidden="true"><i></i></span><span class="lights" aria-hidden="true"><b></b><b></b><b></b></span><span class="stl">Stow controls</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><kbd>M</kbd></button>
+<div id="beam" aria-hidden="true"></div>
 <div id="console">
 <button id="hBack" class="half back" aria-label="Back" title="Back" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span>Back</span></button>
 <div id="time">
@@ -320,6 +350,7 @@ body.nospeech .listen{display:none}
   <div><span>Boost</span><kbd>Shift</kbd></div>
   <div><span>Select &amp; fly to</span><kbd>Click</kbd></div>
   <div><span>Return home</span><kbd>H</kbd></div>
+  <div><span>Stow / launch controls</span><kbd>M</kbd></div>
   <div><span>Back out</span><kbd>Esc</kbd></div>
   <div><span>Previous / next object</span><kbd>Backspace, Alt+← / →</kbd></div>
   <div><span>Pause / speed</span><kbd>Space  ,  .</kbd></div>
@@ -858,6 +889,7 @@ addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(modal.cla
   if(k===','||k==='<')setSpeed(speedI-1);if(k==='.'||k==='>')setSpeed(speedI+1);
   if(k==='backspace'||(e.altKey&&k==='arrowleft')){e.preventDefault();goHist(-1);return}if(e.altKey&&k==='arrowright'){e.preventDefault();goHist(1);return}
   if(k==='h'&&!e.metaKey&&!e.ctrlKey&&!e.altKey){askHome();return}
+  if(k==='m'&&!e.metaKey&&!e.ctrlKey&&!e.altKey){toggleStow();return}
   if(k==='escape'){if(modal.classList.contains('open')){if($('#wHide'))closeWelcome();else closeModal();return}if(tour){endTour();return}if(sel&&sel.kind==='moon')select(sel.parent,true);else overview()}});
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
@@ -1215,13 +1247,31 @@ const consoleEl=$('#console');
 function fitConsole(){
   const W=innerWidth,H=innerHeight,w=consoleEl.offsetWidth,h=consoleEl.offsetHeight;if(!w||!h)return;
   const land=H<=500&&W>600,phone=W<=600;let s,gap;
-  if(land){s=Math.min(.75,(W*.42)/w,(H-128)/h);gap=8}
+  if(land){s=Math.min(.75,(W*.42)/w,(H-176)/h);gap=8}
   else if(phone){s=Math.min(1,(W-16)/w,(H*.42)/h);gap=10}
   else{const roomW=W-24,roomH=H*(H<820?.32:H<1000?.35:.38);s=Math.min(1,roomW/w,roomH/h);gap=14}
   s=Math.max(.45,s);
-  const root=document.documentElement.style;root.setProperty('--s',s.toFixed(3));root.setProperty('--ch',Math.ceil(h*s+gap+10)+'px');
+  const root=document.documentElement.style,stowed=document.body.classList.contains('stowed');root.setProperty('--s',s.toFixed(3));
+  const hb=stowed?gap:Math.ceil(h*s+gap+10);root.setProperty('--hb',hb+'px');root.setProperty('--bb',(gap+4)+'px');root.setProperty('--bw',Math.round(w*s)+'px');
+  const sw=(document.getElementById('stow')||{offsetWidth:240}).offsetWidth;root.setProperty('--hl',land?Math.round(Math.max(10+w*s/2,10+sw/2))+'px':'50%');root.setProperty('--ch',(hb+50)+'px');
 }
 addEventListener('resize',fitConsole);fitConsole();
+
+/* stow / launch the controls, with a docking whoosh when sound is on */
+let audioCtx=null;
+function whoosh(up){if(!narratorOn)return;try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const ac=audioCtx,t=ac.currentTime,d=.6;
+  const buf=ac.createBuffer(1,Math.floor(ac.sampleRate*d),ac.sampleRate),ch=buf.getChannelData(0);for(let i=0;i<ch.length;i++)ch[i]=(Math.random()*2-1)*(1-i/ch.length);
+  const src=ac.createBufferSource();src.buffer=buf;const f=ac.createBiquadFilter();f.type='bandpass';f.Q.value=1.4;
+  f.frequency.setValueAtTime(up?300:1800,t);f.frequency.exponentialRampToValueAtTime(up?1800:260,t+d);
+  const g=ac.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.08);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  const o=ac.createOscillator();o.type='sine';o.frequency.setValueAtTime(up?220:660,t);o.frequency.exponentialRampToValueAtTime(up?660:180,t+d);const og=ac.createGain();og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(.05,t+.06);og.gain.exponentialRampToValueAtTime(.0001,t+d);
+  src.connect(f).connect(g).connect(ac.destination);o.connect(og).connect(ac.destination);src.start(t);o.start(t);src.stop(t+d);o.stop(t+d)}catch(_){}}
+function toggleStow(){const st=!document.body.classList.contains('stowed');document.body.classList.toggle('stowed',st);
+  const b=$('#stow');b.setAttribute('aria-expanded',!st);b.querySelector('.stl').textContent=st?'Launch controls':'Stow controls';
+  consoleEl.inert=st;if(st&&consoleEl.contains(document.activeElement))b.focus({preventScroll:true});
+  for(const k in pad)pad[k]=false;fitConsole();whoosh(!st);
+  const bm=$('#beam');bm.classList.remove('go');void bm.offsetWidth;bm.classList.add('go')}
+$('#stow').onclick=toggleStow;
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitConsole);
 
 if('ResizeObserver' in window)new ResizeObserver(fitConsole).observe(consoleEl);
