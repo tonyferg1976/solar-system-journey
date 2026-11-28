@@ -1261,11 +1261,12 @@ addEventListener('resize',fitConsole);fitConsole();
 let audioCtx=null;
 function whoosh(up){if(!narratorOn)return;try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const ac=audioCtx,t=ac.currentTime,d=.6;
   const buf=ac.createBuffer(1,Math.floor(ac.sampleRate*d),ac.sampleRate),ch=buf.getChannelData(0);for(let i=0;i<ch.length;i++)ch[i]=(Math.random()*2-1)*(1-i/ch.length);
-  const src=ac.createBufferSource();src.buffer=buf;const f=ac.createBiquadFilter();f.type='bandpass';f.Q.value=1.4;
+  const src=ac.createBufferSource();src.buffer=buf;const f=ac.createBiquadFilter();f.type='bandpass';f.Q.value=.9;
   f.frequency.setValueAtTime(up?300:1800,t);f.frequency.exponentialRampToValueAtTime(up?1800:260,t+d);
-  const g=ac.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.08);g.gain.exponentialRampToValueAtTime(.0001,t+d);
-  const o=ac.createOscillator();o.type='sine';o.frequency.setValueAtTime(up?220:660,t);o.frequency.exponentialRampToValueAtTime(up?660:180,t+d);const og=ac.createGain();og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(.05,t+.06);og.gain.exponentialRampToValueAtTime(.0001,t+d);
-  src.connect(f).connect(g).connect(ac.destination);o.connect(og).connect(ac.destination);src.start(t);o.start(t);src.stop(t+d);o.stop(t+d)}catch(_){}}
+  const g=ac.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.9,t+.08);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  const o=ac.createOscillator();o.type='sine';o.frequency.setValueAtTime(up?220:660,t);o.frequency.exponentialRampToValueAtTime(up?660:180,t+d);const og=ac.createGain();og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(.22,t+.06);og.gain.exponentialRampToValueAtTime(.0001,t+d);
+  const comp=ac.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=4;const mg=ac.createGain();mg.gain.value=1.6;comp.connect(mg).connect(ac.destination);
+  src.connect(f).connect(g).connect(comp);o.connect(og).connect(comp);src.start(t);o.start(t);src.stop(t+d);o.stop(t+d)}catch(_){}}
 function toggleStow(){const st=!document.body.classList.contains('stowed');document.body.classList.toggle('stowed',st);
   const b=$('#stow');b.setAttribute('aria-expanded',!st);b.querySelector('.stl').textContent=st?'Launch controls':'Stow controls';
   consoleEl.inert=st;if(st&&consoleEl.contains(document.activeElement))b.focus({preventScroll:true});
