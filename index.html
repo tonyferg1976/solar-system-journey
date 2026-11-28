@@ -283,7 +283,6 @@ body.nospeech .listen{display:none}
   <button id="tOrb" class="on">Orbits</button>
   <button id="tLbl" class="on">Labels</button>
   <button id="tScale">True distances</button>
-  <button id="tReset">Overview</button>
   <button id="tNar" class="on snd" aria-pressed="true" title="Turn the narrator voice on or off">Sound on</button>
 </div>
 
@@ -822,7 +821,6 @@ $('#tOrb').onclick=e=>{showOrbits=!showOrbits;e.currentTarget.classList.toggle('
 $('#tLbl').onclick=e=>{showLabels=!showLabels;e.currentTarget.classList.toggle('on',showLabels)};
 $('#tScale').onclick=e=>{S.mode^=1;e.currentTarget.classList.toggle('on',!!S.mode);orbitLines.forEach(o=>{o.line.geometry.dispose();o.line.geometry=buildOrbitGeo(o.el)});beltMats.forEach(m=>m.uniforms.uMode.value=S.mode);
   if(cam.mode==='focus'&&cam.target===sun)cam.dist=overviewDist()};
-$('#tReset').onclick=()=>overview();
 $('#help').onclick=()=>$('#helpCard').classList.toggle('open');
 
 /* time */
@@ -1028,14 +1026,14 @@ function renderInfo(){
   info.innerHTML=`<button class="x" aria-label="Close">✕</button><h2>${b.name}</h2><div class="sub">${kindLabel(b)}</div>${listenBtn('info:'+b.name,'Listen')}
   <table>${rowsFor(b).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table>
   <p>${desc||''}</p>${facts.length?`<ul>${facts.map(f=>`<li>${f}</li>`).join('')}</ul>`:''}${extra}${moonsHtml}
-  <div class="acts">${b.kind==='moon'?`<button data-m="${b.parent.name}">← ${b.parent.name}</button>`:''}<button data-a="fly">Fly here</button><button data-a="ov">Overview</button></div><div class="morebar"><button class="more" aria-expanded="${info.classList.contains('full')}"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></i><span>${info.classList.contains('full')?'Show less':'Show more'}</span></button></div>`;
+  <div class="acts">${b.kind==='moon'?`<button data-m="${b.parent.name}">← ${b.parent.name}</button>`:''}<button data-a="fly">Fly here</button></div><div class="morebar"><button class="more" aria-expanded="${info.classList.contains('full')}"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></i><span>${info.classList.contains('full')?'Show less':'Show more'}</span></button></div>`;
   updListen();
 }
 function showBelt(k){
   stopSpeech();beltSel=k;sel=null;setMoonOrbits(null);const B=BELTS[k];
   info.innerHTML=`<button class="x" aria-label="Close">✕</button><h2>${B.name}</h2><div class="sub">${B.kind}</div>${listenBtn('info:'+B.name,'Listen')}
   <table>${B.rows.map(([a,v])=>`<tr><td>${a}</td><td>${v}</td></tr>`).join('')}</table><p>${B.desc}</p><ul>${B.facts.map(f=>`<li>${f}</li>`).join('')}</ul>
-  <div class="acts"><button data-a="ov">Overview</button></div><div class="morebar"><button class="more" aria-expanded="${info.classList.contains('full')}"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></i><span>${info.classList.contains('full')?'Show less':'Show more'}</span></button></div>`;
+  <div class="morebar"><button class="more" aria-expanded="${info.classList.contains('full')}"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></i><span>${info.classList.contains('full')?'Show less':'Show more'}</span></button></div>`;
   info.classList.add('open');narrate('info:'+B.name);
 }
 info.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt)return;
@@ -1043,7 +1041,7 @@ info.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt)ret
   if(bt.classList.contains('listen')){if(say.owner===bt.dataset.owner)stopSpeech();else speak(infoSpeech(),bt.dataset.owner);return}
   if(bt.classList.contains('x')){if(say.owner&&say.owner.startsWith('info:'))stopSpeech();sel=null;beltSel=null;info.classList.remove('open');setMoonOrbits(null);return}
   if(bt.dataset.m){select(byName.get(bt.dataset.m.toLowerCase()),true);return}
-  if(bt.dataset.a==='fly'&&sel)flyTo(sel);if(bt.dataset.a==='ov')overview()});
+  if(bt.dataset.a==='fly'&&sel)flyTo(sel)});
 
 /* ---------------- journeys ---------------- */
 const JOURNEYS=[
