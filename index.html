@@ -964,7 +964,7 @@ function select(b,fly){
   if(!b){info.classList.remove('open');setMoonOrbits(null);return}
   if(fly&&tour&&!tour.paused){tour.paused=true;renderTour()}
   if(fly){pushHist(b);flyTo(b);if(b.moons&&b.moons.length&&speedI>4&&b!==sun)setSpeed(4)}
-  setMoonOrbits(b.kind==='moon'?b.parent:b);renderInfo();info.classList.add('open');narrate('info:'+b.name);
+  setMoonOrbits(b.kind==='moon'?b.parent:b);renderInfo();info.classList.add('open');if(!hist.nav)narrate('info:'+b.name);
 }
 function setMoonOrbits(sys){for(const b of bodies)if(b.orbitLine&&b.kind==='moon')b.orbitLine.visible=!!sys&&b.parent===sys&&showOrbits}
 function rowsFor(b){
