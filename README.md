@@ -14,7 +14,7 @@ An interactive 3D solar system explorer that runs in the browser, built with [Th
 - Journeys: seven guided tours (Grand Tour, Ocean Worlds, Fire and Ice, Lords of the Rings, Record Breakers, Kuiper Frontier, Moons of Jupiter) that fly you between stops with narration
 - Quiz: 10 questions per round from a hand-written and data-generated bank; the camera flies to each answer, and your best and last scores are saved in your browser
 - Works on phones and tablets: drag to look, pinch to zoom, tap to select
-- Bottom controls scale to fit the window
+- Bottom controls scale to fit the window, and can be stowed away and launched again with the docking-hatch button (or M)
 - A start screen and a welcome screen that the narrator reads aloud
 - A narrator (on by default; mute with the Sound on/off button) reads out each world you visit and narrates journeys, using the device's best available female English voice
 - Time controls from real time up to 10 years per second, search, labels and orbit toggles, and a "true distances" mode
@@ -41,6 +41,7 @@ Three.js r128 loads from cdnjs, so an internet connection is needed.
 | Boost | Shift |
 | Select and fly to | Click |
 | Return home (with confirmation) | Return home button or H |
+| Stow / launch controls | Stow button or M |
 | Back out | Esc |
 | Previous / next object | Back and Forward buttons, Backspace, Alt+← / → |
 | Pause / speed | Space, `,` and `.` |
