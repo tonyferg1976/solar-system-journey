@@ -156,6 +156,21 @@ button.primary:hover{background:linear-gradient(180deg,#ffd994,#f5ab45)}
 .acts2{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:6px}
 @media(prefers-reduced-motion:reduce){.ring.best{animation:none}#tour{transition:none}}
 @media(max-width:900px){#brand div{display:none}#search input{width:130px}}
+/* narrator Listen button */
+.listen{display:inline-flex;align-items:center;gap:8px;margin:2px 0 10px;padding:6px 16px 6px 12px;min-height:40px;border-radius:999px;font-weight:600;font-size:14.5px;color:#ffe2b0;
+  background:linear-gradient(180deg,rgba(255,181,71,.2),rgba(255,140,40,.08));border:1px solid rgba(255,181,71,.5);box-shadow:0 0 12px rgba(255,170,60,.15)}
+.listen:hover{background:linear-gradient(180deg,rgba(255,181,71,.3),rgba(255,140,40,.14))}
+.listen .spk{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.listen .spk path:first-child{fill:currentColor;fill-opacity:.25}
+.listen .bars{display:none;align-items:flex-end;gap:2px;width:20px;height:16px}
+.listen .bars i{flex:1;border-radius:1px;background:currentColor;height:30%;animation:eq 1s ease-in-out infinite}
+.listen .bars i:nth-child(2){animation-delay:-.6s}.listen .bars i:nth-child(3){animation-delay:-.3s}.listen .bars i:nth-child(4){animation-delay:-.8s}
+@keyframes eq{0%,100%{height:25%}50%{height:100%}}
+.listen.speaking .spk{display:none}.listen.speaking .bars{display:flex}
+.listen.speaking,.listen.on{color:#1b1204;background:linear-gradient(180deg,#ffcf7a,#f0a035);border-color:#ffcf7a;box-shadow:0 0 16px rgba(255,180,70,.45)}
+#tour .tctl .listen{margin:0;min-height:38px}
+body.nospeech .listen{display:none}
+@media(prefers-reduced-motion:reduce){.listen .bars i{animation:none;height:70%}}
 /* keep the info panel clear of the console on laptop-width screens */
 @media(min-width:601px) and (min-height:501px){#info{bottom:var(--ch,84px)}}
 /* phones, portrait */
@@ -171,7 +186,7 @@ button.primary:hover{background:linear-gradient(180deg,#ffd994,#f5ab45)}
   #console{transform:translateX(-50%) translateY(var(--hy,0px)) scale(var(--s,.8));transform-origin:50% 100%;bottom:10px}.tile{display:none}.phone{display:block}
   #tour{top:116px;padding:12px 14px 10px}#tour h3{font-size:22px}#tour p{font-size:14.5px;margin:6px 0 8px}#tour .tctl .ti span{display:none}
   #mcard{padding:18px 16px 14px}#mcard h2{font-size:22px}#mcard .qq{font-size:19px}
-  #info{top:116px;bottom:auto;max-height:168px;overflow:hidden;padding:14px 14px 0}#info h2{font-size:24px;padding-right:44px}
+  #info{top:116px;bottom:auto;max-height:204px;overflow:hidden;padding:14px 14px 0}#info h2{font-size:24px;padding-right:44px}
   #info.full{max-height:max(200px,calc(100% - 116px - var(--ch,300px)));overflow-y:auto}
   #info .morebar{display:flex;justify-content:center;position:sticky;bottom:0;margin:0 -14px;padding:26px 0 10px;
     background:linear-gradient(to bottom,rgba(10,14,24,0),rgba(10,14,24,.97) 48%)}
@@ -870,7 +885,7 @@ const histName=e=>e==='overview'?'solar system view':e.name;
 function updHist(){const bk=$('#hBack'),fw=$('#hFwd'),p=hist.list[hist.i-1],n=hist.list[hist.i+1];
   bk.disabled=!p;fw.disabled=!n;bk.title=p?'Back to '+histName(p):'Back';fw.title=n?'Forward to '+histName(n):'Forward';bk.setAttribute('aria-label',bk.title);fw.setAttribute('aria-label',fw.title)}
 function pushHist(e){if(hist.nav||hist.list[hist.i]===e)return;hist.list=hist.list.slice(0,hist.i+1);hist.list.push(e);if(hist.list.length>100)hist.list.shift();hist.i=hist.list.length-1;updHist()}
-function goHome(){endTour();closeModal();sel=null;beltSel=null;info.classList.remove('open');info.classList.remove('full');setMoonOrbits(null);
+function goHome(){stopSpeech();endTour();closeModal();sel=null;beltSel=null;info.classList.remove('open');info.classList.remove('full');setMoonOrbits(null);
   hist.nav=true;overview();hist.nav=false;cam.anim.dur=2.6;hist.list=['overview'];hist.i=0;updHist()}
 function askHome(){const n=Math.max(0,hist.list.length-1);
   if(n===0&&!tour){goHome();return}
@@ -881,8 +896,44 @@ function askHome(){const n=Math.max(0,hist.list.length-1);
 $('#home').onclick=askHome;
 function goHist(d){const j=hist.i+d;if(j<0||j>=hist.list.length)return;hist.i=j;hist.nav=true;const e=hist.list[j];if(e==='overview')overview();else select(e,true);hist.nav=false;updHist()}
 $('#hBack').onclick=()=>goHist(-1);$('#hFwd').onclick=()=>goHist(1);
+/* ---------------- narrator voice (browser speech synthesis) ---------------- */
+const say={ok:'speechSynthesis' in window&&'SpeechSynthesisUtterance' in window,voice:null,owner:null,gen:0};
+if(!say.ok)document.body.classList.add('nospeech');
+const FEMALE=['aria','jenny','natasha','sonia','libby','michelle','emma','ava','clara','zira','hazel','susan','samantha','karen','serena','moira','tessa','fiona','victoria','allison','kate','catherine','female','joanna','salli','kendra','kimberly','ivy','amy','olivia','nicky','ana','maisie','freya','annette','elsa','sara','ashley','molly','emily'];
+const MALE=['david','mark','daniel','alex','fred','george','james','guy','ryan','thomas','oliver','lee','aaron','rishi','male','eric','arthur','brian','william','tom','gordon','reed','rocko','grandpa','ralph','junior'];
+function pickVoice(){if(!say.ok)return;const vs=speechSynthesis.getVoices().filter(v=>/^en([-_]|$)/i.test(v.lang));if(!vs.length)return;
+  let best=null,bs=-1e9;for(const v of vs){const n=v.name.toLowerCase();let sc=0;
+    if(FEMALE.some(f=>n.includes(f)))sc+=10;if(MALE.some(m=>new RegExp('\\b'+m+'\\b').test(n)))sc-=25;
+    if(/natural|online|neural|premium|enhanced/.test(n))sc+=6;if(/google/.test(n))sc+=2;
+    if(/en[-_]au/i.test(v.lang))sc+=3;else if(/en[-_](gb|nz|ie)/i.test(v.lang))sc+=1.5;else if(/en[-_]us/i.test(v.lang))sc+=1;
+    if(/whisper|bells|bubbles|boing|cellos|organ|trinoids|zarvox|bad news|good news|jester|superstar|wobble|albert|hysterical/.test(n))sc-=50;
+    if(sc>bs){bs=sc;best=v}}
+  say.voice=best}
+if(say.ok){pickVoice();speechSynthesis.addEventListener?speechSynthesis.addEventListener('voiceschanged',pickVoice):(speechSynthesis.onvoiceschanged=pickVoice)}
+function speechClean(t){return String(t).replace(/<[^>]*>/g,'').replace(/°C/g,' degrees Celsius').replace(/km\/h/g,' kilometres per hour').replace(/(\d)\s*km\b/g,'$1 kilometres').replace(/\bkm\b/g,'kilometres')
+  .replace(/\bAU\b/g,'astronomical units').replace(/[−–]\s?(\d)/g,'minus $1').replace(/[≈~]\s?/g,'about ').replace(/\s·\s/g,', ').replace(/’/g,"'").replace(/\s+/g,' ').trim()}
+function speechChunks(t){const out=[];let cur='';for(const s of t.split(/(?<=[.!?])\s+/)){if((cur+' '+s).length>190&&cur){out.push(cur);cur=s}else cur=cur?cur+' '+s:s}if(cur)out.push(cur);return out}
+function speak(text,owner,onEnd){if(!say.ok)return;stopSpeech();const g=++say.gen;say.owner=owner;const parts=speechChunks(speechClean(text));
+  parts.forEach((p,k)=>{const u=new SpeechSynthesisUtterance(p);if(say.voice){u.voice=say.voice;u.lang=say.voice.lang}else u.lang='en-AU';u.rate=.94;u.pitch=1.06;
+    if(k===parts.length-1)u.onend=()=>{if(g!==say.gen)return;say.owner=null;updListen();if(onEnd)onEnd()};
+    u.onerror=()=>{if(g!==say.gen)return;say.owner=null;updListen()};speechSynthesis.speak(u)});
+  updListen()}
+function stopSpeech(){if(!say.ok)return;say.gen++;const was=say.owner;say.owner=null;try{speechSynthesis.cancel()}catch(_){}if(was)updListen()}
+const SPK='<svg class="spk" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
+const listenBtn=(owner,label,extra='')=>`<button class="listen${extra}" data-owner="${owner}" aria-pressed="false">${SPK}<span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="lt">${label}</span></button>`;
+function updListen(){for(const b of document.querySelectorAll('.listen')){const on=b.dataset.owner===say.owner;b.classList.toggle('speaking',on);b.setAttribute('aria-pressed',on);
+  const lt=b.querySelector('.lt');if(!lt)continue;if(b.dataset.owner==='tour')lt.textContent=tour&&tour.narrate?(on?'Narrating':'Narrator on'):'Listen';else lt.textContent=on?'Stop':'Listen'}}
+function infoSpeech(){
+  if(beltSel){const B=BELTS[beltSel];return `Hello, explorer! Let's learn about the ${B.name}. ${B.desc} Here are some amazing facts. ${B.facts.join(' ')}`}
+  const b=sel;if(!b)return'';
+  if(b.unnamed)return `Hello, explorer! This is one of the tiny moons of ${b.parent.name}. It's so small that it doesn't even have a name yet, just a code number. ${GROUPS[b.g]}`;
+  const desc=b.kind==='moon'?(b.info.desc||GROUPS[b.g]):b.desc,facts=b.kind==='moon'?(b.info.facts||[]):b.facts;
+  const size=b.rKm>=1?`It is about ${fmt(b.rKm*2>=100?Math.round(b.rKm*2/10)*10:Math.round(b.rKm*2))} kilometres across.`:'';
+  return `Hello, explorer! Let's learn about ${b.kind==='star'?'our':''} ${b.name}. ${b.kind==='star'?'It is a star.':kindLabel(b).replace(/ · /g,', ')+'.'} ${size} ${desc||''} ${facts.length?'Here are some amazing facts. '+facts.join(' '):''}`}
+function tourSpeech(){const [name,text]=tour.j.stops[tour.i];return `${tour.i===0?`Welcome to the ${tour.j.title}! `:''}Stop ${tour.i+1}: ${name}. ${text}${tour.i===tour.j.stops.length-1?' That was our last stop. Great exploring!':''}`}
+
 function select(b,fly){
-  sel=b;beltSel=null;$('#q').value='';
+  stopSpeech();sel=b;beltSel=null;$('#q').value='';
   if(!b){info.classList.remove('open');setMoonOrbits(null);return}
   if(fly&&tour&&!tour.paused){tour.paused=true;renderTour()}
   if(fly){pushHist(b);flyTo(b);if(b.moons&&b.moons.length&&speedI>4&&b!==sun)setSpeed(4)}
@@ -915,21 +966,23 @@ function renderInfo(){
   if(b.moons&&b.moons.length){const named=b.moons.filter(m=>!m.unnamed).sort((x,y)=>y.rKm-x.rKm);const show=named.slice(0,b===byName.get('saturn')||b===byName.get('jupiter')?18:30);
     const rest=b.moons.length-show.length;
     moonsHtml=`<h3>Moons (${b.moons.length})</h3><div class="chips">${show.map(m=>`<button data-m="${m.name}">${m.name}</button>`).join('')}</div>${rest?`<p class="note" style="margin-top:6px">+ ${rest} smaller moons. Zoom in or use search to explore them.</p>`:''}`}
-  info.innerHTML=`<button class="x" aria-label="Close">✕</button><h2>${b.name}</h2><div class="sub">${kindLabel(b)}</div>
+  info.innerHTML=`<button class="x" aria-label="Close">✕</button><h2>${b.name}</h2><div class="sub">${kindLabel(b)}</div>${listenBtn('info:'+b.name,'Listen')}
   <table>${rowsFor(b).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table>
   <p>${desc||''}</p>${facts.length?`<ul>${facts.map(f=>`<li>${f}</li>`).join('')}</ul>`:''}${extra}${moonsHtml}
   <div class="acts">${b.kind==='moon'?`<button data-m="${b.parent.name}">← ${b.parent.name}</button>`:''}<button data-a="fly">Fly here</button><button data-a="ov">Overview</button></div><div class="morebar"><button class="more" aria-expanded="${info.classList.contains('full')}"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></i><span>${info.classList.contains('full')?'Show less':'Show more'}</span></button></div>`;
+  updListen();
 }
 function showBelt(k){
-  beltSel=k;sel=null;setMoonOrbits(null);const B=BELTS[k];
-  info.innerHTML=`<button class="x" aria-label="Close">✕</button><h2>${B.name}</h2><div class="sub">${B.kind}</div>
+  stopSpeech();beltSel=k;sel=null;setMoonOrbits(null);const B=BELTS[k];
+  info.innerHTML=`<button class="x" aria-label="Close">✕</button><h2>${B.name}</h2><div class="sub">${B.kind}</div>${listenBtn('info:'+B.name,'Listen')}
   <table>${B.rows.map(([a,v])=>`<tr><td>${a}</td><td>${v}</td></tr>`).join('')}</table><p>${B.desc}</p><ul>${B.facts.map(f=>`<li>${f}</li>`).join('')}</ul>
   <div class="acts"><button data-a="ov">Overview</button></div><div class="morebar"><button class="more" aria-expanded="${info.classList.contains('full')}"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></i><span>${info.classList.contains('full')?'Show less':'Show more'}</span></button></div>`;
   info.classList.add('open');
 }
 info.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt)return;
   if(bt.classList.contains('more')){const f=info.classList.toggle('full');bt.querySelector('span').textContent=f?'Show less':'Show more';bt.setAttribute('aria-expanded',f);info.scrollTop=0;return}
-  if(bt.classList.contains('x')){sel=null;beltSel=null;info.classList.remove('open');setMoonOrbits(null);return}
+  if(bt.classList.contains('listen')){if(say.owner===bt.dataset.owner)stopSpeech();else speak(infoSpeech(),bt.dataset.owner);return}
+  if(bt.classList.contains('x')){if(say.owner&&say.owner.startsWith('info:'))stopSpeech();sel=null;beltSel=null;info.classList.remove('open');setMoonOrbits(null);return}
   if(bt.dataset.m){select(byName.get(bt.dataset.m.toLowerCase()),true);return}
   if(bt.dataset.a==='fly'&&sel)flyTo(sel);if(bt.dataset.a==='ov')overview()});
 
@@ -1003,8 +1056,9 @@ const DWELL=11;let tour=null;const tourEl=$('#tour');
 function startTour(j){closeModal();info.classList.remove('open');tour={j,i:0,t:0,paused:false,done:false};gotoStop(0)}
 function gotoStop(i){if(!tour)return;const n=tour.j.stops.length;i=clamp(i,0,n-1);Object.assign(tour,{i,t:0,done:false});
   const b=byName.get(tour.j.stops[i][0].toLowerCase());pushHist(b);flyTo(b,undefined,3.2);sel=b;beltSel=null;info.classList.remove('open');
-  setMoonOrbits(b.kind==='moon'?b.parent:b);if(b.moons&&b.moons.length&&speedI>4&&b!==sun)setSpeed(4);renderTour()}
-function endTour(){tour=null;tourEl.classList.remove('open')}
+  setMoonOrbits(b.kind==='moon'?b.parent:b);if(b.moons&&b.moons.length&&speedI>4&&b!==sun)setSpeed(4);renderTour();
+  if(tour.narrate)speak(tourSpeech(),'tour');else stopSpeech()}
+function endTour(){if(say.owner==='tour')stopSpeech();tour=null;tourEl.classList.remove('open')}
 const IC={prev:'<path d="M15 6l-6 6 6 6"/>',next:'<path d="M9 6l6 6-6 6"/>',pause:'<path d="M9 6v12M15 6v12"/>',play:'<path d="M8 5l11 7-11 7z"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'};
 const ico=k=>`<svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>`;
 function renderTour(){if(!tour){tourEl.classList.remove('open');return}const {j,i}=tour,n=j.stops.length,[name,text]=j.stops[i];const b=byName.get(name.toLowerCase());
@@ -1016,17 +1070,19 @@ function renderTour(){if(!tour){tourEl.classList.remove('open');return}const {j,
   <div class="tctl"><button data-t="prev" ${i===0?'disabled':''} aria-label="Previous stop">${ico('prev')}</button>
   <button data-t="pause" aria-label="${tour.paused?'Resume':'Pause'}">${ico(tour.paused?'play':'pause')}<span>${tour.done?'Finished':tour.paused?'Resume':'Pause'}</span></button>
   <button data-t="next" ${i===n-1?'disabled':''} aria-label="Next stop">${ico('next')}</button>
+  ${listenBtn('tour',tour.narrate?'Narrator on':'Listen',tour.narrate?' on':'')}
   <button data-t="info" class="ti">${ico('info')}<span>About ${name}</span></button></div>`;
-  tourEl.classList.add('open');
+  tourEl.classList.add('open');updListen();
 }
 tourEl.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt||!tour)return;const a=bt.dataset.t;
+  if(bt.classList.contains('listen')){tour.narrate=!tour.narrate;if(tour.narrate)speak(tourSpeech(),'tour');else stopSpeech();renderTour();return}
   if(a==='end')endTour();else if(a==='prev')gotoStop(tour.i-1);else if(a==='next')gotoStop(tour.i+1);else if(a==='go')gotoStop(+bt.dataset.i);
-  else if(a==='pause'){if(tour.done){gotoStop(0)}else{tour.paused=!tour.paused;if(!tour.paused&&cam.mode!=='focus')flyTo(sel,undefined,2);renderTour()}}
+  else if(a==='pause'){if(tour.done){gotoStop(0)}else{tour.paused=!tour.paused;if(!tour.paused&&cam.mode!=='focus')flyTo(sel,undefined,2);if(tour.paused)stopSpeech();else if(tour.narrate)speak(tourSpeech(),'tour');renderTour()}}
   else if(a==='info'){tour.paused=true;renderTour();sel=byName.get(tour.j.stops[tour.i][0].toLowerCase());renderInfo();info.classList.add('open')}});
 function tourTick(dt){if(!tour||tour.paused)return;
   if(cam.mode!=='focus'){tour.paused=true;renderTour();return}
   if(cam.anim)return;tour.t+=dt;const p=$('#tprog');if(p)p.style.width=Math.min(100,tour.t/DWELL*100)+'%';
-  if(tour.t>=DWELL){if(tour.i<tour.j.stops.length-1)gotoStop(tour.i+1);else{tour.paused=true;tour.done=true;renderTour();const pp=$('#tprog');if(pp)pp.style.width='100%'}}}
+  if(tour.t>=DWELL){if(tour.narrate&&say.owner==='tour')return;if(tour.i<tour.j.stops.length-1)gotoStop(tour.i+1);else{tour.paused=true;tour.done=true;renderTour();const pp=$('#tprog');if(pp)pp.style.width='100%'}}}
 
 /* ---------------- modal (journey list + quiz) ---------------- */
 const modal=$('#modal'),mcard=$('#mcard');
