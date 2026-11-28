@@ -14,8 +14,9 @@ An interactive 3D solar system explorer that runs in the browser, built with [Th
 - Journeys: seven guided tours (Grand Tour, Ocean Worlds, Fire and Ice, Lords of the Rings, Record Breakers, Kuiper Frontier, Moons of Jupiter) that fly you between stops with narration
 - Quiz: 10 questions per round from a hand-written and data-generated bank; the camera flies to each answer, and your best and last scores are saved in your browser
 - Works on phones and tablets: drag to look, pinch to zoom, tap to select
-- Bottom controls scale to the window and fade away after a few idle seconds (switch off with the Auto-hide toggle)
-- Listen buttons read each object's details aloud, and journeys can be narrated stop by stop, using the device's best available female English voice
+- Bottom controls scale to fit the window
+- A welcome screen introduces the app (and can read itself aloud)
+- A narrator (on by default, toggle with Narrator) reads out each world you visit and narrates journeys, using the device's best available female English voice
 - Time controls from real time up to 10 years per second, search, labels and orbit toggles, and a "true distances" mode
 
 ## Run it

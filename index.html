@@ -156,6 +156,17 @@ button.primary:hover{background:linear-gradient(180deg,#ffd994,#f5ab45)}
 .acts2{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:6px}
 @media(prefers-reduced-motion:reduce){.ring.best{animation:none}#tour{transition:none}}
 @media(max-width:900px){#brand div{display:none}#search input{width:130px}}
+/* welcome screen */
+.welcome h2{font-size:30px!important}.welcome .lead{font-size:16px;color:var(--ink)!important;opacity:.9}
+.wgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:6px 0 16px}
+.witem{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.witem .wi{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,rgba(255,200,120,.35),rgba(255,140,40,.08));border:1px solid rgba(255,181,71,.45);color:#ffd59a}
+.witem .wi svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.witem b{display:block;font-size:15px}.witem span{font-size:13.5px;color:var(--dim);line-height:1.4}
+.wacts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.wacts .listen{margin:0}
+.wfoot{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:13.5px;color:var(--dim)}.wfoot input{width:18px;height:18px;accent-color:#f0a035}
+@media(max-width:600px){.wgrid{grid-template-columns:1fr;gap:8px;margin-bottom:8px}.welcome h2{font-size:24px!important}.welcome .lead{font-size:15px}.witem{padding:10px}.witem .wi{width:34px;height:34px}.witem span{font-size:13px}
+  .welcome .wacts{position:sticky;bottom:-14px;margin:0 -16px;padding:18px 16px 12px;background:linear-gradient(to bottom,rgba(11,15,24,0),rgba(11,15,24,.98) 28%)}.welcome .wacts button{flex:1 1 auto}.welcome .wacts .listen:not(.speaking){background:linear-gradient(180deg,#3a2c14,#241a0c)}}
 /* narrator Listen button */
 .listen{display:inline-flex;align-items:center;gap:8px;margin:2px 0 10px;padding:6px 16px 6px 12px;min-height:40px;border-radius:999px;font-weight:600;font-size:14.5px;color:#ffe2b0;
   background:linear-gradient(180deg,rgba(255,181,71,.2),rgba(255,140,40,.08));border:1px solid rgba(255,181,71,.5);box-shadow:0 0 12px rgba(255,170,60,.15)}
@@ -209,8 +220,7 @@ body.nospeech .listen{display:none}
   #help{top:66px;bottom:auto;right:12px}#helpCard{top:116px;bottom:auto;max-height:calc(100% - 126px);overflow:auto}
   #info{top:66px;bottom:8px;width:min(340px,46vw)}
 }
-body.idle #console{opacity:0;--hy:28px;pointer-events:none}
-@media(prefers-reduced-motion:reduce){#console{transition:opacity .3s}body.idle #console{--hy:0px}#info{transition:none}#info .more i{animation:none!important}}
+@media(prefers-reduced-motion:reduce){#info{transition:none}#info .more i{animation:none!important}}
 </style>
 </head>
 <body>
@@ -232,7 +242,7 @@ body.idle #console{opacity:0;--hy:28px;pointer-events:none}
   <button id="tLbl" class="on">Labels</button>
   <button id="tScale">True distances</button>
   <button id="tReset">Overview</button>
-  <button id="tHide" class="on" title="Fade the bottom controls when you are not using them">Auto-hide</button>
+  <button id="tNar" class="on" title="Read out facts about each world you visit">Narrator</button>
 </div>
 
 <div id="console">
@@ -286,6 +296,7 @@ body.idle #console{opacity:0;--hy:28px;pointer-events:none}
 
 <button id="help" class="glass" aria-label="Controls">? Controls</button>
 <div id="helpCard" class="glass">
+  <button id="showWelcome" style="width:100%;margin-bottom:10px">Show the welcome screen</button>
   <h3>Controls</h3>
   <div><span>Look / orbit</span><kbd>Drag</kbd></div>
   <div><span>Zoom</span><kbd>Scroll / pinch</kbd></div>
@@ -833,7 +844,7 @@ addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(modal.cla
   if(k===','||k==='<')setSpeed(speedI-1);if(k==='.'||k==='>')setSpeed(speedI+1);
   if(k==='backspace'||(e.altKey&&k==='arrowleft')){e.preventDefault();goHist(-1);return}if(e.altKey&&k==='arrowright'){e.preventDefault();goHist(1);return}
   if(k==='h'&&!e.metaKey&&!e.ctrlKey&&!e.altKey){askHome();return}
-  if(k==='escape'){if(modal.classList.contains('open')){closeModal();return}if(tour){endTour();return}if(sel&&sel.kind==='moon')select(sel.parent,true);else overview()}});
+  if(k==='escape'){if(modal.classList.contains('open')){if($('#wHide'))closeWelcome();else closeModal();return}if(tour){endTour();return}if(sel&&sel.kind==='moon')select(sel.parent,true);else overview()}});
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
 
@@ -920,9 +931,11 @@ function speak(text,owner,onEnd){if(!say.ok)return;stopSpeech();const g=++say.ge
   updListen()}
 function stopSpeech(){if(!say.ok)return;say.gen++;const was=say.owner;say.owner=null;try{speechSynthesis.cancel()}catch(_){}if(was)updListen()}
 const SPK='<svg class="spk" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
+let narratorOn=true;try{narratorOn=localStorage.getItem('sse-narrator')!=='off'}catch(_){}
+const narrate=owner=>{if(narratorOn&&say.ok)speak(infoSpeech(),owner)};
 const listenBtn=(owner,label,extra='')=>`<button class="listen${extra}" data-owner="${owner}" aria-pressed="false">${SPK}<span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="lt">${label}</span></button>`;
 function updListen(){for(const b of document.querySelectorAll('.listen')){const on=b.dataset.owner===say.owner;b.classList.toggle('speaking',on);b.setAttribute('aria-pressed',on);
-  const lt=b.querySelector('.lt');if(!lt)continue;if(b.dataset.owner==='tour')lt.textContent=tour&&tour.narrate?(on?'Narrating':'Narrator on'):'Listen';else lt.textContent=on?'Stop':'Listen'}}
+  const lt=b.querySelector('.lt');if(!lt)continue;if(b.dataset.owner==='tour')lt.textContent=tour&&tour.narrate?(on?'Narrating':'Narrator on'):'Listen';else lt.textContent=on?'Stop':(b.dataset.owner==='welcome'?'Hear this':'Listen')}}
 function infoSpeech(){
   if(beltSel){const B=BELTS[beltSel];return `Hello, explorer! Let's learn about the ${B.name}. ${B.desc} Here are some amazing facts. ${B.facts.join(' ')}`}
   const b=sel;if(!b)return'';
@@ -937,7 +950,7 @@ function select(b,fly){
   if(!b){info.classList.remove('open');setMoonOrbits(null);return}
   if(fly&&tour&&!tour.paused){tour.paused=true;renderTour()}
   if(fly){pushHist(b);flyTo(b);if(b.moons&&b.moons.length&&speedI>4&&b!==sun)setSpeed(4)}
-  setMoonOrbits(b.kind==='moon'?b.parent:b);renderInfo();info.classList.add('open');
+  setMoonOrbits(b.kind==='moon'?b.parent:b);renderInfo();info.classList.add('open');narrate('info:'+b.name);
 }
 function setMoonOrbits(sys){for(const b of bodies)if(b.orbitLine&&b.kind==='moon')b.orbitLine.visible=!!sys&&b.parent===sys&&showOrbits}
 function rowsFor(b){
@@ -977,7 +990,7 @@ function showBelt(k){
   info.innerHTML=`<button class="x" aria-label="Close">✕</button><h2>${B.name}</h2><div class="sub">${B.kind}</div>${listenBtn('info:'+B.name,'Listen')}
   <table>${B.rows.map(([a,v])=>`<tr><td>${a}</td><td>${v}</td></tr>`).join('')}</table><p>${B.desc}</p><ul>${B.facts.map(f=>`<li>${f}</li>`).join('')}</ul>
   <div class="acts"><button data-a="ov">Overview</button></div><div class="morebar"><button class="more" aria-expanded="${info.classList.contains('full')}"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></i><span>${info.classList.contains('full')?'Show less':'Show more'}</span></button></div>`;
-  info.classList.add('open');
+  info.classList.add('open');narrate('info:'+B.name);
 }
 info.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt)return;
   if(bt.classList.contains('more')){const f=info.classList.toggle('full');bt.querySelector('span').textContent=f?'Show less':'Show more';bt.setAttribute('aria-expanded',f);info.scrollTop=0;return}
@@ -1053,7 +1066,7 @@ const JOURNEYS=[
   ['Valetudo','A tiny rule-breaker that orbits forwards through a crowd of backwards-moving moons.']]},
 ];
 const DWELL=11;let tour=null;const tourEl=$('#tour');
-function startTour(j){closeModal();info.classList.remove('open');tour={j,i:0,t:0,paused:false,done:false};gotoStop(0)}
+function startTour(j){closeModal();info.classList.remove('open');tour={j,i:0,t:0,paused:false,done:false,narrate:narratorOn&&say.ok};gotoStop(0)}
 function gotoStop(i){if(!tour)return;const n=tour.j.stops.length;i=clamp(i,0,n-1);Object.assign(tour,{i,t:0,done:false});
   const b=byName.get(tour.j.stops[i][0].toLowerCase());pushHist(b);flyTo(b,undefined,3.2);sel=b;beltSel=null;info.classList.remove('open');
   setMoonOrbits(b.kind==='moon'?b.parent:b);if(b.moons&&b.moons.length&&speedI>4&&b!==sun)setSpeed(4);renderTour();
@@ -1197,19 +1210,6 @@ function fitConsole(){
 addEventListener('resize',fitConsole);fitConsole();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitConsole);
 
-/* auto-hide the console after a few idle seconds; any movement, tap or key brings it back */
-const IDLE_AFTER=3.5;let idleT=0,overConsole=false,autoHide=true;
-try{autoHide=localStorage.getItem('sse-autohide')!=='off'}catch(_){}
-$('#tHide').classList.toggle('on',autoHide);
-$('#tHide').onclick=e=>{autoHide=!autoHide;e.currentTarget.classList.toggle('on',autoHide);try{localStorage.setItem('sse-autohide',autoHide?'on':'off')}catch(_){}wake()};
-function wake(){idleT=0;document.body.classList.remove('idle')}
-['pointermove','pointerdown','wheel','keydown','touchstart'].forEach(ev=>addEventListener(ev,wake,{passive:true,capture:true}));
-consoleEl.addEventListener('pointerenter',()=>{overConsole=true});consoleEl.addEventListener('pointerleave',()=>{overConsole=false});
-function idleTick(dt){
-  const busy=!autoHide||overConsole||Object.values(pad).some(Boolean)||modal.classList.contains('open')||!!consoleEl.querySelector(':focus-visible');
-  if(busy){idleT=0;if(document.body.classList.contains('idle'))document.body.classList.remove('idle');return}
-  idleT+=dt;if(idleT>IDLE_AFTER&&!document.body.classList.contains('idle'))document.body.classList.add('idle');
-}
 if('ResizeObserver' in window)new ResizeObserver(fitConsole).observe(consoleEl);
 
 function updateBodies(t){
@@ -1272,12 +1272,39 @@ function frame(now){
     const ld=document.getElementById('liveD');if(ld&&sel&&sel.anchor){const r=keplerPos(sel,simT,tmpV2);ld.textContent=`${fmt(r,r<10?3:2)} AU`}}
   // textures, a few per frame
   let budget=14;while(texJobs.length&&budget>0){const j=texJobs.shift();j.mat.map=makeTex(j.fn,j.w,j.h);if(j.alpha)j.mat.opacity=.95;else j.mat.color.set(0xffffff);if(j.basic)j.mat.color.set(0xffffff);j.mat.needsUpdate=true;budget-=j.w>=512?14:j.w>=256?4:1}
-  tourTick(dt);idleTick(dt);
+  tourTick(dt);
   hintT+=dt;if(hintT>6&&hintT<7){$('#hint').style.opacity=0}
   renderer.render(scene,camera);requestAnimationFrame(frame);
 }
 camera.position.set(0,700,900);cam.look.set(0,0,0);camera.lookAt(0,0,0);
 overview();
+/* ---------------- welcome screen ---------------- */
+const WI={look:'<path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.6"/>',tap:'<circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="8.5" stroke-dasharray="2 3"/>',
+ ear:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/>',ship:'<path d="M12 3c3 2.5 4.5 6 4.5 10l-2 3h-5l-2-3C7.5 9 9 5.5 12 3z"/><circle cx="12" cy="10" r="1.8"/><path d="M9.5 16l-2.5 4M14.5 16l2.5 4"/>',
+ route:'<circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="6" r="2.2"/><path d="M7 17.2c4-1 2.5-5.5 6-6.2s3.5-2.8 4.4-3.6"/>',quiz:'<circle cx="12" cy="12" r="9"/><path d="M9.3 9.4a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><path d="M12 17.6v.2"/>'};
+const WELCOME=[['look','Look around','Drag to spin the view. Scroll or pinch to zoom in and out.'],['tap','Visit a world','Tap any planet or moon to fly there and discover its secrets.'],
+ ['ear','Listen and learn','The narrator reads out facts about every world you visit. Switch her on or off with the Narrator button.'],['ship','Fly your spaceship','Use the arrow buttons to fly anywhere. Return home brings you back here.'],
+ ['route','Go on a journey','Guided tours fly you to volcanoes, ocean worlds, giant rings and more.'],['quiz','Take the quiz','Test what you have learned and try to beat your best score.']];
+const WELCOME_SPEECH=`Welcome, space explorer! This is our solar system: the Sun, eight planets, dwarf planets and ${moonCount} moons, all moving around the Sun right now. You can drag to look around, and tap any planet or moon to fly there. I'll tell you all about every world you visit. Use the arrow buttons to fly your spaceship anywhere you like. Try a journey for a guided tour, or take the quiz to test what you've learned. Let's start exploring!`;
+function showWelcome(){let hide=false;try{hide=localStorage.getItem('sse-welcome')==='off'}catch(_){}
+  openModal(`<div class="welcome"><button class="mx" data-c="wclose" aria-label="Close">✕</button><h2>Welcome, space explorer!</h2>
+  <p class="lead">This is our solar system: the Sun, 8 planets, dwarf planets and ${moonCount} moons, all moving around the Sun right now. Where will you go first?</p>
+  <div class="wgrid">${WELCOME.map(([ic,t,d])=>`<div class="witem"><span class="wi"><svg viewBox="0 0 24 24" aria-hidden="true">${WI[ic]}</svg></span><div><b>${t}</b><span>${d}</span></div></div>`).join('')}</div>
+  <div class="wacts"><button data-c="wstart" class="primary">Start exploring</button><button data-c="wjourney">Take a journey</button>${listenBtn('welcome','Hear this')}</div>
+  <label class="wfoot"><input type="checkbox" id="wHide" ${hide?'checked':''}> Don’t show this when the app opens</label></div>`);
+  $('#hint').style.display='none';updListen();const st=mcard.querySelector('[data-c=wstart]');if(st)st.focus({preventScroll:true})}
+function closeWelcome(){const c=$('#wHide');if(c){try{localStorage.setItem('sse-welcome',c.checked?'off':'on')}catch(_){}}if(say.owner==='welcome')stopSpeech();closeModal()}
+mcard.addEventListener('click',e=>{const bt=e.target.closest('button');if(!bt)return;
+  if(bt.classList.contains('listen')&&bt.dataset.owner==='welcome'){if(say.owner==='welcome')stopSpeech();else speak(WELCOME_SPEECH,'welcome');return}
+  if(bt.dataset.c==='wclose'){closeWelcome();return}
+  if(bt.dataset.c==='wstart'){closeWelcome();if(narratorOn&&say.ok)speak("Let's go! Tap any planet or moon to fly there and learn all about it.",'welcome');return}
+  if(bt.dataset.c==='wjourney'){closeWelcome();showJourneys();return}});
+$('#showWelcome').onclick=()=>{$('#helpCard').classList.remove('open');showWelcome()};
+$('#tNar').classList.toggle('on',narratorOn);
+$('#tNar').onclick=e=>{narratorOn=!narratorOn;e.currentTarget.classList.toggle('on',narratorOn);try{localStorage.setItem('sse-narrator',narratorOn?'on':'off')}catch(_){}
+  if(!narratorOn)stopSpeech();else if(sel&&info.classList.contains('open'))narrate('info:'+sel.name);if(tour){tour.narrate=narratorOn;renderTour()}};
+if(!say.ok)$('#tNar').style.display='none';
+{let showIt=true;try{showIt=localStorage.getItem('sse-welcome')!=='off'}catch(_){}if(showIt)showWelcome()}
 requestAnimationFrame(frame);
 }
 }
