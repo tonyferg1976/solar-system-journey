@@ -951,12 +951,12 @@ const listenBtn=(owner,label,extra='')=>`<button class="listen${extra}" data-own
 function updListen(){for(const b of document.querySelectorAll('.listen')){const on=b.dataset.owner===say.owner;b.classList.toggle('speaking',on);b.setAttribute('aria-pressed',on);
   const lt=b.querySelector('.lt');if(!lt)continue;if(b.dataset.owner==='tour')lt.textContent=tour&&tour.narrate?(on?'Narrating':'Narrator on'):'Listen';else lt.textContent=on?'Stop':(b.dataset.owner==='welcome'?'Hear this':'Listen')}}
 function infoSpeech(){
-  if(beltSel){const B=BELTS[beltSel];return `Hello, explorer! Let's learn about the ${B.name}. ${B.desc} Here are some amazing facts. ${B.facts.join(' ')}`}
+  if(beltSel){const B=BELTS[beltSel];return `The ${B.name}. ${B.desc} Here are some amazing facts. ${B.facts.join(' ')}`}
   const b=sel;if(!b)return'';
-  if(b.unnamed)return `Hello, explorer! This is one of the tiny moons of ${b.parent.name}. It's so small that it doesn't even have a name yet, just a code number. ${GROUPS[b.g]}`;
+  if(b.unnamed)return `This is one of the tiny moons of ${b.parent.name}. It's so small that it doesn't even have a name yet, just a code number. ${GROUPS[b.g]}`;
   const desc=b.kind==='moon'?(b.info.desc||GROUPS[b.g]):b.desc,facts=b.kind==='moon'?(b.info.facts||[]):b.facts;
   const size=b.rKm>=1?`It is about ${fmt(b.rKm*2>=100?Math.round(b.rKm*2/10)*10:Math.round(b.rKm*2))} kilometres across.`:'';
-  return `Hello, explorer! Let's learn about ${b.kind==='star'?'our':''} ${b.name}. ${b.kind==='star'?'It is a star.':kindLabel(b).replace(/ · /g,', ')+'.'} ${size} ${desc||''} ${facts.length?'Here are some amazing facts. '+facts.join(' '):''}`}
+  return `${b.kind==='star'?'The Sun, our star.':b.name+'.'} ${b.kind==='star'?'':kindLabel(b).replace(/ · /g,', ')+'.'} ${size} ${desc||''} ${facts.length?'Here are some amazing facts. '+facts.join(' '):''}`}
 function tourSpeech(){const [name,text]=tour.j.stops[tour.i];return `${tour.i===0?`Welcome to the ${tour.j.title}! `:''}Stop ${tour.i+1}: ${name}. ${text}${tour.i===tour.j.stops.length-1?' That was our last stop. Great exploring!':''}`}
 
 function select(b,fly){
